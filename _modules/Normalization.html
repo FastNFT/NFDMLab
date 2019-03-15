@@ -1,0 +1,336 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Normalization &#8212; NFDMLab  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Normalization</h1><div class="highlight"><pre>
+<span></span><span class="c1"># This file is part of NFDMLab.</span>
+<span class="c1">#</span>
+<span class="c1"># NFDMLab is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the version 2 of the GNU General</span>
+<span class="c1"># Public License as published by the Free Software Foundation.</span>
+<span class="c1">#</span>
+<span class="c1"># NFDMLab is distributed in the hope that it will be useful, but</span>
+<span class="c1"># WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public</span>
+<span class="c1"># License along with NFDMLab; if not, write to the Free Software</span>
+<span class="c1"># Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA</span>
+<span class="c1"># 02111-1307 USA</span>
+<span class="c1">#</span>
+<span class="c1"># Contributors:</span>
+<span class="c1"># Christoph Mahnke 2018</span>
+<span class="c1"># Sander Wahls 2019</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+
+<div class="viewcode-block" id="BaseNormalization"><a class="viewcode-back" href="../normalization.html#Normalization.BaseNormalization">[docs]</a><span class="k">class</span> <span class="nc">BaseNormalization</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for normalization. Normalization classes let us switch</span>
+<span class="sd">    to normalized forms of the transmission equations and back. All</span>
+<span class="sd">    normalization classes should be derived from this class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BaseNormalization.norm_field"><a class="viewcode-back" href="../normalization.html#Normalization.BaseNormalization.norm_field">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">norm_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply normalization to a field A.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseNormalization.denorm_field"><a class="viewcode-back" href="../normalization.html#Normalization.BaseNormalization.denorm_field">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">denorm_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;De-normalize a normalized field u.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseNormalization.norm_time"><a class="viewcode-back" href="../normalization.html#Normalization.BaseNormalization.norm_time">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">norm_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply normalization to a time variable t.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseNormalization.denorm_time"><a class="viewcode-back" href="../normalization.html#Normalization.BaseNormalization.denorm_time">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">denorm_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tv</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;De-normalize a normalized time variable tau.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseNormalization.norm_dist"><a class="viewcode-back" href="../normalization.html#Normalization.BaseNormalization.norm_dist">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">norm_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply normalization to a space variable z.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseNormalization.denorm_dist"><a class="viewcode-back" href="../normalization.html#Normalization.BaseNormalization.denorm_dist">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">denorm_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xi</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;De-normalize a normalized space variable xi.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseNormalization.norm_alpha"><a class="viewcode-back" href="../normalization.html#Normalization.BaseNormalization.norm_alpha">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">norm_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply normalization to an attentuation parameter alpha.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseNormalization.denorm_alpha"><a class="viewcode-back" href="../normalization.html#Normalization.BaseNormalization.denorm_alpha">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">denorm_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Gamma</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;De-normalize a normalized attenuation parameter Gamma.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+
+<div class="viewcode-block" id="Lossless"><a class="viewcode-back" href="../normalization.html#Normalization.Lossless">[docs]</a><span class="k">class</span> <span class="nc">Lossless</span><span class="p">(</span><span class="n">BaseNormalization</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The Lossless object allows to normalize and de-normalize field, time and spatial variables.</span>
+
+<span class="sd">    Here, it is assumed that the fiber is lossless.</span>
+
+<span class="sd">    Initialization:</span>
+
+<span class="sd">        normobj = Normalization(b2, gamma, Tscal)</span>
+
+<span class="sd">        Arguments:</span>
+
+<span class="sd">            - b2    : GVD parameter in units of s**2/m</span>
+<span class="sd">            - gamma : nonlinearity parameter in units of (W m)**(-1)</span>
+<span class="sd">            - Tscal : scaling time in units of s</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">        - initialize:</span>
+
+<span class="sd">            b2 = -20e-27</span>
+<span class="sd">            gamma = 0.001</span>
+<span class="sd">            Ts = 1e-12</span>
+<span class="sd">            normobj = Normalization(b2, gamma, Ts)</span>
+
+<span class="sd">        - normalize a field amplitude A:</span>
+
+<span class="sd">            u = normobj.norm_field(A)</span>
+
+<span class="sd">        - de-normalize a normalized field amplitude u:</span>
+
+<span class="sd">            A = normobj.denorm_field(u)</span>
+
+<span class="sd">        - normalize a time t:</span>
+
+<span class="sd">            tau = normobj.norm_time(t)</span>
+
+<span class="sd">        - normalize a distance L:</span>
+
+<span class="sd">            xi = normobj.norm_dist(L)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Lossless.__init__"><a class="viewcode-back" href="../normalization.html#Normalization.Lossless.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">Tscal</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b2</span> <span class="o">=</span> <span class="n">b2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Tscal</span> <span class="o">=</span> <span class="n">Tscal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_factor</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">Tscal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ampl_factor</span> <span class="o">=</span> <span class="n">Tscal</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">b2</span><span class="o">/</span><span class="n">gamma</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dist_factor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span> <span class="o">/</span> <span class="n">Tscal</span><span class="o">**</span><span class="mi">2</span></div>
+
+<div class="viewcode-block" id="Lossless.__repr__"><a class="viewcode-back" href="../normalization.html#Normalization.Lossless.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">rs</span><span class="o">=</span><span class="s2">&quot;fiber parameters:</span><span class="se">\n</span><span class="s2">    beta_2 = </span><span class="si">%.2e</span><span class="s2"> s**2/m</span><span class="se">\n</span><span class="s2">    gamma  = </span><span class="si">%.2e</span><span class="s2"> (Wm)**(-1)</span><span class="se">\n</span><span class="s2">scaling time:</span><span class="se">\n</span><span class="s2">    Tscal= </span><span class="si">%.2e</span><span class="s2"> s&quot;</span><span class="o">%</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">b2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tscal</span><span class="p">)</span>
+        <span class="n">rs</span><span class="o">+=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">scaling factors:</span><span class="se">\n</span><span class="s2">    time_factor  = </span><span class="si">%.2e</span><span class="se">\n</span><span class="s2">    ampli_factor = </span><span class="si">%.2e</span><span class="se">\n</span><span class="s2">    dist_factor  = </span><span class="si">%.2e</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_factor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ampl_factor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_factor</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rs</span></div>
+
+<div class="viewcode-block" id="Lossless.norm_field"><a class="viewcode-back" href="../normalization.html#Normalization.Lossless.norm_field">[docs]</a>    <span class="k">def</span> <span class="nf">norm_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply normalization to a field A.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ampl_factor</span> <span class="o">*</span> <span class="n">A</span></div>
+
+<div class="viewcode-block" id="Lossless.denorm_field"><a class="viewcode-back" href="../normalization.html#Normalization.Lossless.denorm_field">[docs]</a>    <span class="k">def</span> <span class="nf">denorm_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;De-normalize a normalized field u.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">u</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">ampl_factor</span></div>
+
+<div class="viewcode-block" id="Lossless.norm_time"><a class="viewcode-back" href="../normalization.html#Normalization.Lossless.norm_time">[docs]</a>    <span class="k">def</span> <span class="nf">norm_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply normalization to a time variable t.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">t</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_factor</span></div>
+
+<div class="viewcode-block" id="Lossless.denorm_time"><a class="viewcode-back" href="../normalization.html#Normalization.Lossless.denorm_time">[docs]</a>    <span class="k">def</span> <span class="nf">denorm_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tv</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;De-normalize a normalized time variable tau.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">tv</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_factor</span></div>
+
+<div class="viewcode-block" id="Lossless.norm_dist"><a class="viewcode-back" href="../normalization.html#Normalization.Lossless.norm_dist">[docs]</a>    <span class="k">def</span> <span class="nf">norm_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply normalization to a space variable z.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">z</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_factor</span></div>
+
+<div class="viewcode-block" id="Lossless.denorm_dist"><a class="viewcode-back" href="../normalization.html#Normalization.Lossless.denorm_dist">[docs]</a>    <span class="k">def</span> <span class="nf">denorm_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xi</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;De-normalize a normalized space variable xi.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">xi</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_factor</span></div>
+
+<div class="viewcode-block" id="Lossless.norm_alpha"><a class="viewcode-back" href="../normalization.html#Normalization.Lossless.norm_alpha">[docs]</a>    <span class="k">def</span> <span class="nf">norm_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply normalization to an attentuation parameter alpha.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">alpha</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_factor</span></div>
+
+<div class="viewcode-block" id="Lossless.denorm_alpha"><a class="viewcode-back" href="../normalization.html#Normalization.Lossless.denorm_alpha">[docs]</a>    <span class="k">def</span> <span class="nf">denorm_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Gamma</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;De-normalize a normalized attenuation parameter Gamma.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Gamma</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_factor</span></div></div>
+
+
+<div class="viewcode-block" id="Lumped"><a class="viewcode-back" href="../normalization.html#Normalization.Lumped">[docs]</a><span class="k">class</span> <span class="nc">Lumped</span><span class="p">(</span><span class="n">Lossless</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The Lumped object allows to normalize and de-normalize for the case of lumped amplfication.</span>
+
+<span class="sd">    Here, it is assumed that fiber losses are compensated by lumped amplification.</span>
+<span class="sd">    When the distance between the amplifiers is small compared to e.g. the dispersion length,</span>
+<span class="sd">    the lossless case can be simulated using a reduced nonlinearity parameter gamma1.</span>
+
+<span class="sd">    See: S.T. Le et al.: &#39;Nonlinear inverse synthesis technique for optical</span>
+<span class="sd">         links with lumped amplification&#39;, Opt. Expr. 23, 8317 (2015)</span>
+
+<span class="sd">    Initialization:</span>
+
+<span class="sd">        normobj = Normalization(b2, gamma, Tscal, alpha, zamp)</span>
+
+<span class="sd">        Arguments:</span>
+
+<span class="sd">            - b2    : GVD parameter in units of s**2/m</span>
+<span class="sd">            - gamma : nonlinearity parameter in units of (W m)**(-1)</span>
+<span class="sd">            - Tscal : scaling time in units of s</span>
+<span class="sd">            - alpha : loss coefficient in units of 1/m</span>
+<span class="sd">            - zamp  : distance between lumped amplifiers in units of m</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">        - initialize:</span>
+
+<span class="sd">            b2 = -20e-27</span>
+<span class="sd">            gamma = 0.001</span>
+<span class="sd">            Ts = 1e-12</span>
+<span class="sd">            alpha = 4.6e-5   # = 0.2dB/km</span>
+<span class="sd">            zamp = 10e3</span>
+<span class="sd">            normobj = NormalizationLumped(b2, gamma, Ts, alpha, zamp)</span>
+
+<span class="sd">        - normalize a field amplitude A:</span>
+
+<span class="sd">            u = normobj.norm_field(A)</span>
+
+<span class="sd">        - de-normalize a normalized field amplitude u:</span>
+
+<span class="sd">            A = normobj.denorm_field(u)</span>
+
+<span class="sd">        - normalize a time t:</span>
+
+<span class="sd">            tau = normobj.norm_time(t)</span>
+
+<span class="sd">        - normalize a distance L:</span>
+
+<span class="sd">            xi = normobj.norm_dist(L)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Lumped.__init__"><a class="viewcode-back" href="../normalization.html#Normalization.Lumped.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">Tscal</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">zamp</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b2</span> <span class="o">=</span> <span class="n">b2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gamma0</span> <span class="o">=</span> <span class="n">gamma</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">zamp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gamma1</span> <span class="o">=</span> <span class="n">gamma</span> <span class="o">*</span> <span class="p">(</span><span class="n">G</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">G</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zamp</span> <span class="o">=</span> <span class="n">zamp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Tscal</span> <span class="o">=</span> <span class="n">Tscal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_factor</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">Tscal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ampl_factor</span> <span class="o">=</span> <span class="n">Tscal</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">b2</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dist_factor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span> <span class="o">/</span> <span class="n">Tscal</span><span class="o">**</span><span class="mi">2</span></div>
+
+<div class="viewcode-block" id="Lumped.__repr__"><a class="viewcode-back" href="../normalization.html#Normalization.Lumped.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">rs</span><span class="o">=</span><span class="s2">&quot;fiber parameters:</span><span class="se">\n</span><span class="s2">    beta_2 = </span><span class="si">%.2e</span><span class="s2"> s**2/m</span><span class="se">\n</span><span class="s2">    gamma  = </span><span class="si">%.2e</span><span class="s2"> (Wm)**(-1)</span><span class="se">\n</span><span class="s2">scaling time:</span><span class="se">\n</span><span class="s2">    Tscal= </span><span class="si">%.2e</span><span class="s2"> s&quot;</span><span class="o">%</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">b2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tscal</span><span class="p">)</span>
+        <span class="n">rs</span><span class="o">+=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">loss and lumped ampl.</span><span class="se">\n</span><span class="s2">   alpha=</span><span class="si">%.2e</span><span class="s2"> (1/m) zamp=</span><span class="si">%.2e</span><span class="s2"> m &quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zamp</span><span class="p">)</span>
+        <span class="n">rs</span><span class="o">+=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">effective nonlinearity parameter</span><span class="se">\n</span><span class="s2">    gamma1 = </span><span class="si">%.2e</span><span class="s2"> (Wm)**(-1)    (=</span><span class="si">%.3f</span><span class="s2"> gamma)&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma0</span><span class="p">)</span>
+        <span class="n">rs</span><span class="o">+=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">scaling factors:</span><span class="se">\n</span><span class="s2">    time_factor  = </span><span class="si">%.2e</span><span class="se">\n</span><span class="s2">    ampli_factor = </span><span class="si">%.2e</span><span class="se">\n</span><span class="s2">    dist_factor  = </span><span class="si">%.2e</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_factor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ampl_factor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_factor</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rs</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">NFDMLab</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code_doc.html">Code documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../videos.html">Videos</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

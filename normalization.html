@@ -1,0 +1,364 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Normalization &#8212; NFDMLab  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Links" href="links.html" />
+    <link rel="prev" title="Helpers" href="helpers.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="normalization">
+<h1>Normalization<a class="headerlink" href="#normalization" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="Normalization.BaseNormalization">
+<em class="property">class </em><code class="descclassname">Normalization.</code><code class="descname">BaseNormalization</code><a class="reference internal" href="_modules/Normalization.html#BaseNormalization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.BaseNormalization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for normalization. Normalization classes let us switch
+to normalized forms of the transmission equations and back. All
+normalization classes should be derived from this class.</p>
+<dl class="method">
+<dt id="Normalization.BaseNormalization.denorm_alpha">
+<code class="descname">denorm_alpha</code><span class="sig-paren">(</span><em>Gamma</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#BaseNormalization.denorm_alpha"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.BaseNormalization.denorm_alpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>De-normalize a normalized attenuation parameter Gamma.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Normalization.BaseNormalization.denorm_dist">
+<code class="descname">denorm_dist</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#BaseNormalization.denorm_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.BaseNormalization.denorm_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>De-normalize a normalized space variable xi.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Normalization.BaseNormalization.denorm_field">
+<code class="descname">denorm_field</code><span class="sig-paren">(</span><em>u</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#BaseNormalization.denorm_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.BaseNormalization.denorm_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>De-normalize a normalized field u.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Normalization.BaseNormalization.denorm_time">
+<code class="descname">denorm_time</code><span class="sig-paren">(</span><em>tv</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#BaseNormalization.denorm_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.BaseNormalization.denorm_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>De-normalize a normalized time variable tau.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Normalization.BaseNormalization.norm_alpha">
+<code class="descname">norm_alpha</code><span class="sig-paren">(</span><em>alpha</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#BaseNormalization.norm_alpha"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.BaseNormalization.norm_alpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply normalization to an attentuation parameter alpha.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Normalization.BaseNormalization.norm_dist">
+<code class="descname">norm_dist</code><span class="sig-paren">(</span><em>z</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#BaseNormalization.norm_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.BaseNormalization.norm_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply normalization to a space variable z.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Normalization.BaseNormalization.norm_field">
+<code class="descname">norm_field</code><span class="sig-paren">(</span><em>A</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#BaseNormalization.norm_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.BaseNormalization.norm_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply normalization to a field A.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Normalization.BaseNormalization.norm_time">
+<code class="descname">norm_time</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#BaseNormalization.norm_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.BaseNormalization.norm_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply normalization to a time variable t.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Normalization.Lossless">
+<em class="property">class </em><code class="descclassname">Normalization.</code><code class="descname">Lossless</code><span class="sig-paren">(</span><em>b2</em>, <em>gamma</em>, <em>Tscal</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#Lossless"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.Lossless" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Lossless object allows to normalize and de-normalize field, time and spatial variables.</p>
+<p>Here, it is assumed that the fiber is lossless.</p>
+<p>Initialization:</p>
+<blockquote>
+<div><p>normobj = Normalization(b2, gamma, Tscal)</p>
+<p>Arguments:</p>
+<blockquote>
+<div><ul class="simple">
+<li>b2    : GVD parameter in units of s**2/m</li>
+<li>gamma : nonlinearity parameter in units of (W m)**(-1)</li>
+<li>Tscal : scaling time in units of s</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p class="rubric">Examples</p>
+<ul>
+<li><p class="first">initialize:</p>
+<blockquote>
+<div><p>b2 = -20e-27
+gamma = 0.001
+Ts = 1e-12
+normobj = Normalization(b2, gamma, Ts)</p>
+</div></blockquote>
+</li>
+<li><p class="first">normalize a field amplitude A:</p>
+<blockquote>
+<div><p>u = normobj.norm_field(A)</p>
+</div></blockquote>
+</li>
+<li><p class="first">de-normalize a normalized field amplitude u:</p>
+<blockquote>
+<div><p>A = normobj.denorm_field(u)</p>
+</div></blockquote>
+</li>
+<li><p class="first">normalize a time t:</p>
+<blockquote>
+<div><p>tau = normobj.norm_time(t)</p>
+</div></blockquote>
+</li>
+<li><p class="first">normalize a distance L:</p>
+<blockquote>
+<div><p>xi = normobj.norm_dist(L)</p>
+</div></blockquote>
+</li>
+</ul>
+<dl class="method">
+<dt id="Normalization.Lossless.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>b2</em>, <em>gamma</em>, <em>Tscal</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#Lossless.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.Lossless.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Normalization.Lossless.__repr__">
+<code class="descname">__repr__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#Lossless.__repr__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.Lossless.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return repr(self).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Normalization.Lossless.denorm_alpha">
+<code class="descname">denorm_alpha</code><span class="sig-paren">(</span><em>Gamma</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#Lossless.denorm_alpha"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.Lossless.denorm_alpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>De-normalize a normalized attenuation parameter Gamma.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Normalization.Lossless.denorm_dist">
+<code class="descname">denorm_dist</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#Lossless.denorm_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.Lossless.denorm_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>De-normalize a normalized space variable xi.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Normalization.Lossless.denorm_field">
+<code class="descname">denorm_field</code><span class="sig-paren">(</span><em>u</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#Lossless.denorm_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.Lossless.denorm_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>De-normalize a normalized field u.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Normalization.Lossless.denorm_time">
+<code class="descname">denorm_time</code><span class="sig-paren">(</span><em>tv</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#Lossless.denorm_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.Lossless.denorm_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>De-normalize a normalized time variable tau.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Normalization.Lossless.norm_alpha">
+<code class="descname">norm_alpha</code><span class="sig-paren">(</span><em>alpha</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#Lossless.norm_alpha"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.Lossless.norm_alpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply normalization to an attentuation parameter alpha.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Normalization.Lossless.norm_dist">
+<code class="descname">norm_dist</code><span class="sig-paren">(</span><em>z</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#Lossless.norm_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.Lossless.norm_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply normalization to a space variable z.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Normalization.Lossless.norm_field">
+<code class="descname">norm_field</code><span class="sig-paren">(</span><em>A</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#Lossless.norm_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.Lossless.norm_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply normalization to a field A.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Normalization.Lossless.norm_time">
+<code class="descname">norm_time</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#Lossless.norm_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.Lossless.norm_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply normalization to a time variable t.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Normalization.Lumped">
+<em class="property">class </em><code class="descclassname">Normalization.</code><code class="descname">Lumped</code><span class="sig-paren">(</span><em>b2</em>, <em>gamma</em>, <em>Tscal</em>, <em>alpha</em>, <em>zamp</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#Lumped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.Lumped" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Lumped object allows to normalize and de-normalize for the case of lumped amplfication.</p>
+<p>Here, it is assumed that fiber losses are compensated by lumped amplification.
+When the distance between the amplifiers is small compared to e.g. the dispersion length,
+the lossless case can be simulated using a reduced nonlinearity parameter gamma1.</p>
+<dl class="docutils">
+<dt>See: S.T. Le et al.: ‘Nonlinear inverse synthesis technique for optical</dt>
+<dd>links with lumped amplification’, Opt. Expr. 23, 8317 (2015)</dd>
+</dl>
+<p>Initialization:</p>
+<blockquote>
+<div><p>normobj = Normalization(b2, gamma, Tscal, alpha, zamp)</p>
+<p>Arguments:</p>
+<blockquote>
+<div><ul class="simple">
+<li>b2    : GVD parameter in units of s**2/m</li>
+<li>gamma : nonlinearity parameter in units of (W m)**(-1)</li>
+<li>Tscal : scaling time in units of s</li>
+<li>alpha : loss coefficient in units of 1/m</li>
+<li>zamp  : distance between lumped amplifiers in units of m</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p class="rubric">Examples</p>
+<ul>
+<li><p class="first">initialize:</p>
+<blockquote>
+<div><p>b2 = -20e-27
+gamma = 0.001
+Ts = 1e-12
+alpha = 4.6e-5   # = 0.2dB/km
+zamp = 10e3
+normobj = NormalizationLumped(b2, gamma, Ts, alpha, zamp)</p>
+</div></blockquote>
+</li>
+<li><p class="first">normalize a field amplitude A:</p>
+<blockquote>
+<div><p>u = normobj.norm_field(A)</p>
+</div></blockquote>
+</li>
+<li><p class="first">de-normalize a normalized field amplitude u:</p>
+<blockquote>
+<div><p>A = normobj.denorm_field(u)</p>
+</div></blockquote>
+</li>
+<li><p class="first">normalize a time t:</p>
+<blockquote>
+<div><p>tau = normobj.norm_time(t)</p>
+</div></blockquote>
+</li>
+<li><p class="first">normalize a distance L:</p>
+<blockquote>
+<div><p>xi = normobj.norm_dist(L)</p>
+</div></blockquote>
+</li>
+</ul>
+<dl class="method">
+<dt id="Normalization.Lumped.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>b2</em>, <em>gamma</em>, <em>Tscal</em>, <em>alpha</em>, <em>zamp</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#Lumped.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.Lumped.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Normalization.Lumped.__repr__">
+<code class="descname">__repr__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Normalization.html#Lumped.__repr__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Normalization.Lumped.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return repr(self).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">NFDMLab</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="code_doc.html">Code documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="constellations.html">Constellations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filters.html">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="helpers.html">Helpers</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Normalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="links.html">Links</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modulators.html">Modulators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qualityassessment.html">Quality Assessment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="videos.html">Videos</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="code_doc.html">Code documentation</a><ul>
+      <li>Previous: <a href="helpers.html" title="previous chapter">Helpers</a></li>
+      <li>Next: <a href="links.html" title="next chapter">Links</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/normalization.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,239 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Links &#8212; NFDMLab  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Modulators" href="modulators.html" />
+    <link rel="prev" title="Normalization" href="normalization.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="links">
+<h1>Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="Links.BaseLink">
+<em class="property">class </em><code class="descclassname">Links.</code><code class="descname">BaseLink</code><a class="reference internal" href="_modules/Links/BaseLink.html#BaseLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Links.BaseLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for fiber-optic links. All link classes should be derived from
+it.</p>
+<p>Link classes simulate the transmission of a fiber input through a series of
+fiber spans, possibly connected by amplifies.</p>
+<p>Any list class should implement the abstract transmit(…) method defined
+below and set the attributes</p>
+<ul class="simple">
+<li>_span_length</li>
+<li>_n_spans</li>
+</ul>
+<p>during construction. Users can access them via the read-only properties
+span_length and n_spans.</p>
+<dl class="attribute">
+<dt id="Links.BaseLink.n_spans">
+<code class="descname">n_spans</code><a class="headerlink" href="#Links.BaseLink.n_spans" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of spans in the fiber link.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Links.BaseLink.span_length">
+<code class="descname">span_length</code><a class="headerlink" href="#Links.BaseLink.span_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Length of a fiber span in m.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Links.BaseLink.transmit">
+<code class="descname">transmit</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Links/BaseLink.html#BaseLink.transmit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Links.BaseLink.transmit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulates the transmission of a fiber input through the link.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input</strong> (<em>numpy.array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#complex" title="(in Python v2.7)"><em>complex</em></a><em>)</em>) – Vector of equispaced time domain samples representing the fiber
+input.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Vector of equispaced time domain samples representing the fiber
+output.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.array(<a class="reference external" href="https://docs.python.org/2/library/functions.html#complex" title="(in Python v2.7)">complex</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Links.SMFSplitStep">
+<em class="property">class </em><code class="descclassname">Links.</code><code class="descname">SMFSplitStep</code><span class="sig-paren">(</span><em>dt</em>, <em>dz</em>, <em>nz</em>, <em>alpha=0.0</em>, <em>beta2=1.0</em>, <em>gamma=-1.0</em>, <em>verbose=False</em>, <em>n_spans=1</em>, <em>post_boost=False</em>, <em>noise=False</em>, <em>noise_figure=3</em>, <em>center_frequency=193100000000000.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Links/SMFSplitStep.html#SMFSplitStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Links.SMFSplitStep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulates a link with one or several single mode fiber spans connected by
+EDFA or Raman amplifiers using a split step method based on SSPROP.</p>
+<p>Only a single polarization is simulated. Contributions from the other
+polarization to the ASE noise are not included.</p>
+<dl class="method">
+<dt id="Links.SMFSplitStep.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>dt</em>, <em>dz</em>, <em>nz</em>, <em>alpha=0.0</em>, <em>beta2=1.0</em>, <em>gamma=-1.0</em>, <em>verbose=False</em>, <em>n_spans=1</em>, <em>post_boost=False</em>, <em>noise=False</em>, <em>noise_figure=3</em>, <em>center_frequency=193100000000000.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Links/SMFSplitStep.html#SMFSplitStep.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Links.SMFSplitStep.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Time step in s.</li>
+<li><strong>dz</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Spatial step in m.</li>
+<li><strong>nz</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of spatial steps for one fiber span.</li>
+<li><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a><em> or </em><em>numpy.array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a><em>)</em>) – Fiber loss coefficient in 1/m. It is possible to pass a vector of
+length nz in order to specify an individual loss coefficient for
+each of the segments of a span. Noise-free Raman amplification can
+be implemented using this feature.</li>
+<li><strong>beta2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Fiber dispersion coefficient in s**2/m.</li>
+<li><strong>gamma</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Fiber nonlinearity coefficient in (W m)**(-1).</li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Set to True for diagnostic ouputs.</li>
+<li><strong>n_spans</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of fiber spans in the link.</li>
+<li><strong>post_boost</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Accumulated fiber loss is compensated with a gain at the end of each
+fiber span if True. Requires alpha to be a scalar. EDFA
+amplification can be implemented using this feature.</li>
+<li><strong>noise</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Add amplified spontaneous emission (ASE) noise at the end of each
+fiber span. EDFA amplification can be implemented using this
+feature.</li>
+<li><strong>noise_figure</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Noise figure in dB for determining the ASE noise if noise==True.</li>
+<li><strong>center_frequency</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Center frequency in Hz for determining the ASE noise if noise==True.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Links.SMFSplitStep.transmit">
+<code class="descname">transmit</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Links/SMFSplitStep.html#SMFSplitStep.transmit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Links.SMFSplitStep.transmit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulates the transmission of a fiber input through the link.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input</strong> (<em>numpy.array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#complex" title="(in Python v2.7)"><em>complex</em></a><em>)</em>) – Vector of equispaced time domain samples representing the fiber
+input.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Vector of equispaced time domain samples representing the fiber
+output.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.array(<a class="reference external" href="https://docs.python.org/2/library/functions.html#complex" title="(in Python v2.7)">complex</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">NFDMLab</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="code_doc.html">Code documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="constellations.html">Constellations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filters.html">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="helpers.html">Helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Links</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modulators.html">Modulators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qualityassessment.html">Quality Assessment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="videos.html">Videos</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="code_doc.html">Code documentation</a><ul>
+      <li>Previous: <a href="normalization.html" title="previous chapter">Normalization</a></li>
+      <li>Next: <a href="modulators.html" title="next chapter">Modulators</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/links.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

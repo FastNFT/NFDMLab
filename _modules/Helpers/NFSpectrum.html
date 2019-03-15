@@ -1,0 +1,324 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Helpers.NFSpectrum &#8212; NFDMLab  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Helpers.NFSpectrum</h1><div class="highlight"><pre>
+<span></span><span class="c1"># This file is part of NFDMLab.</span>
+<span class="c1">#</span>
+<span class="c1"># NFDMLab is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the version 2 of the GNU General</span>
+<span class="c1"># Public License as published by the Free Software Foundation.</span>
+<span class="c1">#</span>
+<span class="c1"># NFDMLab is distributed in the hope that it will be useful, but</span>
+<span class="c1"># WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public</span>
+<span class="c1"># License along with NFDMLab; if not, write to the Free Software</span>
+<span class="c1"># Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA</span>
+<span class="c1"># 02111-1307 USA</span>
+<span class="c1">#</span>
+<span class="c1"># Contributors:</span>
+<span class="c1"># Sander Wahls (TU Delft) 2019</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<div class="viewcode-block" id="NFSpectrum"><a class="viewcode-back" href="../../helpers.html#Helpers.NFSpectrum">[docs]</a><span class="k">class</span> <span class="nc">NFSpectrum</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Stores and plots nonlinear Fourier spectra.</span>
+
+<span class="sd">    The following attributes can be set/read by the user:</span>
+
+<span class="sd">    xi : np.array(float)</span>
+<span class="sd">        Nonlinear frequency grid (a vector).</span>
+<span class="sd">    cont : np.array(complex)</span>
+<span class="sd">        Vector specficying the continuous spectrum at the nonlinear frequencies</span>
+<span class="sd">        in xi. Has to be of the type specified during construction.</span>
+<span class="sd">    bound_states : np.array(complex)</span>
+<span class="sd">        Vector containing the bound states (eigenvalues).</span>
+<span class="sd">    normconsts : np.array(complex)</span>
+<span class="sd">        Vector specifying the residues (b/a&#39;) or norming constants (b) for each</span>
+<span class="sd">        of the bound states.</span>
+<span class="sd">    xi_plot_range : np.array(float)</span>
+<span class="sd">        Vector of length two with xi_plot_range[0]&lt;xi_plot_range[1]. Speficies</span>
+<span class="sd">        the xi range shown when the continuous spectrum is plotted using show().</span>
+<span class="sd">        The default is an empty vector [], in which case no range are set.</span>
+<span class="sd">    bound_state_plot_range : np.array(float)</span>
+<span class="sd">        Vector of length four of the form [re_min, re_max, im_min, im_max].</span>
+<span class="sd">        Speficies the range of real/imaginary parts for the bound states when</span>
+<span class="sd">        the bound states are plotted using show(). The default is an empty</span>
+<span class="sd">        vector [], in which case no ranges are set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cont_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Type of the continuous spectrum stored in this object (read-only, set</span>
+<span class="sd">        during construction).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        &quot;none&quot; : str</span>
+<span class="sd">            if no continuous spectrum is stored.</span>
+<span class="sd">        &quot;b/a&quot; : str</span>
+<span class="sd">            if the continuous spectrum is a reflection coefficient.</span>
+<span class="sd">        &quot;b&quot; : str</span>
+<span class="sd">            if the continuous spectrum is a b-coefficient.&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cont_type</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">disc_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Type of the discrete spectrum stored in this object (read-only, set</span>
+<span class="sd">        during construction).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        &quot;none&quot; : str</span>
+<span class="sd">            if no discrete spectrum is stored.</span>
+<span class="sd">        &quot;b/a&#39;&quot; : str</span>
+<span class="sd">            if the discrete spectrum contains eigenvalues and residues.</span>
+<span class="sd">        &quot;b&quot; : str</span>
+<span class="sd">            if the discrete spectrum contains eigenvalues and norming constants.&#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disc_type</span>
+
+<div class="viewcode-block" id="NFSpectrum.__init__"><a class="viewcode-back" href="../../helpers.html#Helpers.NFSpectrum.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cont_type</span><span class="p">,</span> <span class="n">disc_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor. Initializes all attributes mentioned above except</span>
+<span class="sd">        cont_type and disc_type to empty values.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cont_type : str</span>
+<span class="sd">            See the cont_type property.</span>
+<span class="sd">        disc_type : str</span>
+<span class="sd">            See the disc_type property.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">cont_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;b/a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cont_type</span> <span class="o">=</span> <span class="n">cont_type</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">disc_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;b/a&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_disc_type</span> <span class="o">=</span> <span class="n">disc_type</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">xi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cont</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bound_states</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normconsts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">xi_plot_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bound_state_plot_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_xi_range_and_legend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">legend</span><span class="p">):</span>
+        <span class="n">has_xi_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xi_plot_range</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span>
+        <span class="k">if</span> <span class="n">has_xi_range</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xi_plot_range</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">legend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">legend</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NFSpectrum.show_contspec_mag"><a class="viewcode-back" href="../../helpers.html#Helpers.NFSpectrum.show_contspec_mag">[docs]</a>    <span class="k">def</span> <span class="nf">show_contspec_mag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plots the magnitude of the continous spectrum.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ax : matplotlib.axes object</span>
+<span class="sd">            Axes used for plotting.</span>
+<span class="sd">        legend : array(str)</span>
+<span class="sd">            Array of legend entries. If None, no legend is added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cont</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\xi$&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$|&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">cont_type</span><span class="o">+</span><span class="sa">r</span><span class="s1">&#39;(\xi)|$&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_xi_range_and_legend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">legend</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NFSpectrum.show_contspec_angle"><a class="viewcode-back" href="../../helpers.html#Helpers.NFSpectrum.show_contspec_angle">[docs]</a>    <span class="k">def</span> <span class="nf">show_contspec_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plots the angle (phase) of the continous spectrum.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ax : matplotlib.axes object</span>
+<span class="sd">            Axes used for plotting.</span>
+<span class="sd">        legend : array(str)</span>
+<span class="sd">            Array of legend entries. If None, no legend is added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cont</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\xi$&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\angle &#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">cont_type</span><span class="o">+</span><span class="sa">r</span><span class="s1">&#39;(\xi)$&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_xi_range_and_legend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">legend</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NFSpectrum.show_discspec"><a class="viewcode-back" href="../../helpers.html#Helpers.NFSpectrum.show_discspec">[docs]</a>    <span class="k">def</span> <span class="nf">show_discspec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plots the bound states of the discrete spectrum.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ax : matplotlib.axes object</span>
+<span class="sd">            Axes used for plotting.</span>
+<span class="sd">        legend : array(str)</span>
+<span class="sd">            Array of legend entries. If None, no legend is added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bound_states</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bound_states</span><span class="p">),</span> <span class="s1">&#39;x&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Real part of eigenvalues&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Imaginary part of eigenvalues&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bound_state_plot_range</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">4</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bound_state_plot_range</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bound_state_plot_range</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">legend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">legend</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NFSpectrum.show"><a class="viewcode-back" href="../../helpers.html#Helpers.NFSpectrum.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plots the nonlinear Fourier spectrum stored in this object. This</span>
+<span class="sd">        routine can be called repeatedly, in which several plots are shown</span>
+<span class="sd">        in the same figure.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        new_fig : bool</span>
+<span class="sd">            If True, a new figute is created by the routine.</span>
+<span class="sd">        title : str</span>
+<span class="sd">            Title of the plot.</span>
+<span class="sd">        legend : array(str)</span>
+<span class="sd">            Array of legend entries. If None, no legend is added.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        matplotlib.figure object</span>
+<span class="sd">            Figure object, only if new_fig==True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">nsubplots</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cont_type</span> <span class="ow">is</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+            <span class="n">nsubplots</span> <span class="o">-=</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">disc_type</span> <span class="ow">is</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+            <span class="n">nsubplots</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">nsubplots</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">new_fig</span><span class="p">:</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="c1"># make figure wider to fit subplot</span>
+            <span class="n">sz</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">get_size_inches</span><span class="p">()</span>
+            <span class="n">sz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*=</span> <span class="n">nsubplots</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="n">sz</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nsubplots</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nsubplots</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+        <span class="n">axes</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">get_axes</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cont_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_contspec_mag</span><span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">legend</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_contspec_angle</span><span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">disc_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_discspec</span><span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">legend</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_fig</span><span class="p">:</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">fig</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">NFDMLab</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../code_doc.html">Code documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../videos.html">Videos</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

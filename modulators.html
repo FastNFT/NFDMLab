@@ -1,0 +1,401 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Modulators &#8212; NFDMLab  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quality Assessment" href="qualityassessment.html" />
+    <link rel="prev" title="Links" href="links.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="modulators">
+<h1>Modulators<a class="headerlink" href="#modulators" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="Modulators.BaseModulator">
+<em class="property">class </em><code class="descclassname">Modulators.</code><code class="descname">BaseModulator</code><a class="reference internal" href="_modules/Modulators/BaseModulator.html#BaseModulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Modulators.BaseModulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for modulators. All modulator classes should be derived from
+it.</p>
+<p>Modulator classes need to implement the abstract methods modulate and
+demodulate defined below, in which symbols are embedded in / extracted from
+time-domain signals. The time-domain here is normalized.</p>
+<p>During construction, any modulator class should set the attributes</p>
+<ul class="simple">
+<li>_norm_dt</li>
+<li>_n_samples</li>
+<li>_n_symbols_per_block</li>
+</ul>
+<p>Users can access these attributes (read-only) via the properties norm_dt,
+n_samples and n_symbols_per_block that already defined in this class.</p>
+<dl class="method">
+<dt id="Modulators.BaseModulator.demodulate">
+<code class="descname">demodulate</code><span class="sig-paren">(</span><em>q_rx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modulators/BaseModulator.html#BaseModulator.demodulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Modulators.BaseModulator.demodulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts a block of symbols from a given fiber output. This includes
+equalization, i.e., removing the impact of fiber propagation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>q_rx</strong> (<em>numpy.array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#complex" title="(in Python v2.7)"><em>complex</em></a><em>)</em>) – The vector q_rx is of length self.n_samples. It contains the
+time-domain samples q_rx(n*self.norm_dt), where
+n=0,1,…,self.n_samples-1. Note that the time here is normalized.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>symbols_rx</strong> (<em>numpy.array(complex)</em>) – A vector of length self.n_symbols_per_block. Note that these values
+do not have to be drawn from a specific constellation. The task of
+assigning these values to constellation points is up to the user.</li>
+<li><strong>nfspec_rx</strong> (<em>NFSpectrum</em>) – Nonlinear Fourier spectrum of the provided signal q_rx(t)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Modulators.BaseModulator.modulate">
+<code class="descname">modulate</code><span class="sig-paren">(</span><em>symbols</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modulators/BaseModulator.html#BaseModulator.modulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Modulators.BaseModulator.modulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Embeds a block of symbols in a nonlinear Fourier spectrum and
+generates the corresponding fiber input.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>symbols</strong> (<em>numpy.array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#complex" title="(in Python v2.7)"><em>complex</em></a><em>)</em>) – A vector of symbols, drawn from a constellation. The length of the
+vector has to be self.n_blocks_per_symbol.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>q_tx</strong> (<em>numpy.array(complex)</em>) – The vector q_tx is of length self.n_samples. It contains the
+time-domain samples q_tx(n*self.norm_dt), where
+n=0,1,…,self.n_samples-1. Note that the time here is normalized.</li>
+<li><strong>nfspec_tx</strong> (<em>NFSpectrum</em>) – Nonlinear Fourier spectrum of the generated signal q_tx(t).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Modulators.BaseModulator.n_samples">
+<code class="descname">n_samples</code><a class="headerlink" href="#Modulators.BaseModulator.n_samples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of samples per fiber input / fiber output (read-only).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Modulators.BaseModulator.n_symbols_per_block">
+<code class="descname">n_symbols_per_block</code><a class="headerlink" href="#Modulators.BaseModulator.n_symbols_per_block" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of symbols embedded in each fiber input / output
+(read-only).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Modulators.BaseModulator.normalized_dt">
+<code class="descname">normalized_dt</code><a class="headerlink" href="#Modulators.BaseModulator.normalized_dt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time difference, in normalized units, between consecutive samples of
+fiber inputs / outputs (read-only).</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-Modulators.CarrierWaveforms"></span><dl class="function">
+<dt id="Modulators.CarrierWaveforms.flat_top">
+<code class="descclassname">Modulators.CarrierWaveforms.</code><code class="descname">flat_top</code><span class="sig-paren">(</span><em>xivec</em>, <em>T0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modulators/CarrierWaveforms.html#flat_top"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Modulators.CarrierWaveforms.flat_top" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flat-top carrier that is bandlimited with bandwidth 2*T0. The effective
+bandwidth, based on visual inspection in linear scale, is around T0.</p>
+<p>The top of this filter has a width of approximately 20/T0. The visible
+bottom (in linear scale) has a width of approximately 45/T0.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Modulators.ContSpecModulator">
+<em class="property">class </em><code class="descclassname">Modulators.</code><code class="descname">ContSpecModulator</code><span class="sig-paren">(</span><em>carrier_waveform_fun</em>, <em>carrier_spacing</em>, <em>n_symbols_per_block</em>, <em>normalized_distance</em>, <em>T</em>, <em>required_normalized_dt</em>, <em>required_dxi</em>, <em>contspec_type</em>, <em>percent_precompensation=0.0</em>, <em>power_control_factor=1.0</em>, <em>use_power_normalization_map=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modulators/ContSpecModulator.html#ContSpecModulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Modulators.ContSpecModulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>This modulator embeds symbols in the continuous spectrum using a classic
+multi-carrier approach.</p>
+<dl class="method">
+<dt id="Modulators.ContSpecModulator.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>carrier_waveform_fun</em>, <em>carrier_spacing</em>, <em>n_symbols_per_block</em>, <em>normalized_distance</em>, <em>T</em>, <em>required_normalized_dt</em>, <em>required_dxi</em>, <em>contspec_type</em>, <em>percent_precompensation=0.0</em>, <em>power_control_factor=1.0</em>, <em>use_power_normalization_map=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modulators/ContSpecModulator.html#ContSpecModulator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Modulators.ContSpecModulator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>carrier_waveform_fun</strong> (<em>function</em>) – A function that maps numpy.array(float) to numpy.array(complex). The
+inputs of this function are vectors with nonlinear frequencies xi.
+The outputs are vectors with the values of the carrier waveforms at
+the corresponding xi. See Helpers.CarrierWaveforms for examples.</li>
+<li><strong>carrier_spacing</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Spacing between consequtive carriers in the nonlinear frequency
+domain (xi).</li>
+<li><strong>n_symbols_per_block</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of carriers.</li>
+<li><strong>normalized_distance</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Length of the fiber link in normalized units.</li>
+<li><strong>T</strong> (<em>numpy.array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a><em>)</em>) – Vector of length two with T[0]&lt;T[1]. Specifies a time interval, in
+normalized units, used during the generation of the fiber inputs.</li>
+<li><strong>required_normalized_dt</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – The modulator will choose the number of time domain samples such
+that the time step, in normalized units, does not exceed this value.</li>
+<li><strong>required_dxi</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – The modulator will choose the number of samples in the nonlinear
+frequency domain such that the nonlinear frequency step is not
+larger than this value.</li>
+<li><strong>contspec_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Type of continuous spectrum used for encoding data. Choose “b/a”
+for reflection coefficients and “b” for b-coefficients.</li>
+<li><strong>percent_precompensation</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Value between 0.0 and 100.0. A value of 50.0 means that transmitter
+and receiver both compensate 50% of the phase change in the
+continuous spectrum induced by the channel. A value of 0.0 means
+that the phase changes is completely reverted at the receiver.</li>
+<li><strong>power_control_factor</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – A positive real number. The carrier waveform is effectively scaled
+by this number.</li>
+<li><strong>use_power_normalization_map</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – If True, the modulator applies a power normalized map as described
+in Yangzhang et. al (Proc. OFC‘17) to the nonlinear Fourier spectrum
+it has generated before passing it on to the inverse NFT. Currently
+only implemented for reflection coefficients (contspec_type=”b/a”).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Modulators.ContSpecModulator.demodulate">
+<code class="descname">demodulate</code><span class="sig-paren">(</span><em>q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modulators/ContSpecModulator.html#ContSpecModulator.demodulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Modulators.ContSpecModulator.demodulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts a block of symbols from a given fiber output. This includes
+equalization, i.e., removing the impact of fiber propagation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>q_rx</strong> (<em>numpy.array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#complex" title="(in Python v2.7)"><em>complex</em></a><em>)</em>) – The vector q_rx is of length self.n_samples. It contains the
+time-domain samples q_rx(n*self.norm_dt), where
+n=0,1,…,self.n_samples-1. Note that the time here is normalized.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>symbols_rx</strong> (<em>numpy.array(complex)</em>) – A vector of length self.n_symbols_per_block. Note that these values
+do not have to be drawn from a specific constellation. The task of
+assigning these values to constellation points is up to the user.</li>
+<li><strong>nfspec_rx</strong> (<em>NFSpectrum</em>) – Nonlinear Fourier spectrum of the provided signal q_rx(t)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Modulators.ContSpecModulator.modulate">
+<code class="descname">modulate</code><span class="sig-paren">(</span><em>symbols</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modulators/ContSpecModulator.html#ContSpecModulator.modulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Modulators.ContSpecModulator.modulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Embeds a block of symbols in a nonlinear Fourier spectrum and
+generates the corresponding fiber input.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>symbols</strong> (<em>numpy.array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#complex" title="(in Python v2.7)"><em>complex</em></a><em>)</em>) – A vector of symbols, drawn from a constellation. The length of the
+vector has to be self.n_blocks_per_symbol.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>q_tx</strong> (<em>numpy.array(complex)</em>) – The vector q_tx is of length self.n_samples. It contains the
+time-domain samples q_tx(n*self.norm_dt), where
+n=0,1,…,self.n_samples-1. Note that the time here is normalized.</li>
+<li><strong>nfspec_tx</strong> (<em>NFSpectrum</em>) – Nonlinear Fourier spectrum of the generated signal q_tx(t).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Modulators.DiscSpecModulator">
+<em class="property">class </em><code class="descclassname">Modulators.</code><code class="descname">DiscSpecModulator</code><span class="sig-paren">(</span><em>eigenvalues</em>, <em>residues_amplitude</em>, <em>normalized_distance</em>, <em>T</em>, <em>required_normalized_dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modulators/DiscSpecModulator.html#DiscSpecModulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Modulators.DiscSpecModulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>This modulator embeds symbols in residues of a multi-soliton with fixed
+eigenvalue pattern.</p>
+<dl class="method">
+<dt id="Modulators.DiscSpecModulator.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>eigenvalues</em>, <em>residues_amplitude</em>, <em>normalized_distance</em>, <em>T</em>, <em>required_normalized_dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modulators/DiscSpecModulator.html#DiscSpecModulator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Modulators.DiscSpecModulator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>eigenvalues</strong> (<em>numpy.array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#complex" title="(in Python v2.7)"><em>complex</em></a><em>)</em>) – Vector of eigenvalues used to generate fiber inputs.</li>
+<li><strong>residues_amplitude</strong> (<em>numpy.array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#complex" title="(in Python v2.7)"><em>complex</em></a><em>)</em>) – Vector of scaling factors. The final residues for the eigenvalue is
+obtained by multiplying these factors with the symbols.</li>
+<li><strong>normalized_distance</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Fiber length in normalized units.</li>
+<li><strong>T</strong> (<em>numpy.array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a><em>)</em>) – Vector of length two with T[0]&lt;T[1]. Specifies the time interval, in
+normalized units, used for the generation of the fiber inputs.</li>
+<li><strong>required_normalized_dt</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – The modulator will choose the number of time domain samples such
+that the time step, in normalized units, does not exceed this value.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Modulators.DiscSpecModulator.demodulate">
+<code class="descname">demodulate</code><span class="sig-paren">(</span><em>q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modulators/DiscSpecModulator.html#DiscSpecModulator.demodulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Modulators.DiscSpecModulator.demodulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts a block of symbols from a given fiber output. This includes
+equalization, i.e., removing the impact of fiber propagation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>q_rx</strong> (<em>numpy.array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#complex" title="(in Python v2.7)"><em>complex</em></a><em>)</em>) – The vector q_rx is of length self.n_samples. It contains the
+time-domain samples q_rx(n*self.norm_dt), where
+n=0,1,…,self.n_samples-1. Note that the time here is normalized.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>symbols_rx</strong> (<em>numpy.array(complex)</em>) – A vector of length self.n_symbols_per_block. Note that these values
+do not have to be drawn from a specific constellation. The task of
+assigning these values to constellation points is up to the user.</li>
+<li><strong>nfspec_rx</strong> (<em>NFSpectrum</em>) – Nonlinear Fourier spectrum of the provided signal q_rx(t)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Modulators.DiscSpecModulator.modulate">
+<code class="descname">modulate</code><span class="sig-paren">(</span><em>symbols</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modulators/DiscSpecModulator.html#DiscSpecModulator.modulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Modulators.DiscSpecModulator.modulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Embeds a block of symbols in a nonlinear Fourier spectrum and
+generates the corresponding fiber input.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>symbols</strong> (<em>numpy.array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#complex" title="(in Python v2.7)"><em>complex</em></a><em>)</em>) – A vector of symbols, drawn from a constellation. The length of the
+vector has to be self.n_blocks_per_symbol.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>q_tx</strong> (<em>numpy.array(complex)</em>) – The vector q_tx is of length self.n_samples. It contains the
+time-domain samples q_tx(n*self.norm_dt), where
+n=0,1,…,self.n_samples-1. Note that the time here is normalized.</li>
+<li><strong>nfspec_tx</strong> (<em>NFSpectrum</em>) – Nonlinear Fourier spectrum of the generated signal q_tx(t).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">NFDMLab</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="code_doc.html">Code documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="constellations.html">Constellations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filters.html">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="helpers.html">Helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="links.html">Links</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Modulators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qualityassessment.html">Quality Assessment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="videos.html">Videos</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="code_doc.html">Code documentation</a><ul>
+      <li>Previous: <a href="links.html" title="previous chapter">Links</a></li>
+      <li>Next: <a href="qualityassessment.html" title="next chapter">Quality Assessment</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/modulators.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

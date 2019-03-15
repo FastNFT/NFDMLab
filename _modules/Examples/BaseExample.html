@@ -1,0 +1,410 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Examples.BaseExample &#8212; NFDMLab  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Examples.BaseExample</h1><div class="highlight"><pre>
+<span></span><span class="c1"># This file is part of NFDMLab.</span>
+<span class="c1">#</span>
+<span class="c1"># NFDMLab is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the version 2 of the GNU General</span>
+<span class="c1"># Public License as published by the Free Software Foundation.</span>
+<span class="c1">#</span>
+<span class="c1"># NFDMLab is distributed in the hope that it will be useful, but</span>
+<span class="c1"># WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public</span>
+<span class="c1"># License along with NFDMLab; if not, write to the Free Software</span>
+<span class="c1"># Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA</span>
+<span class="c1"># 02111-1307 USA</span>
+<span class="c1">#</span>
+<span class="c1"># Contributors:</span>
+<span class="c1"># Sander Wahls (TU Delft) 2019</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">Constellations</span> <span class="k">import</span> <span class="n">BaseConstellation</span>
+<span class="kn">from</span> <span class="nn">Modulators</span> <span class="k">import</span> <span class="n">BaseModulator</span>
+<span class="kn">from</span> <span class="nn">Links</span> <span class="k">import</span> <span class="n">BaseLink</span>
+<span class="kn">from</span> <span class="nn">Normalization</span> <span class="k">import</span> <span class="n">BaseNormalization</span>
+<span class="kn">from</span> <span class="nn">Filters</span> <span class="k">import</span> <span class="n">BaseFilter</span>
+<span class="kn">from</span> <span class="nn">Helpers</span> <span class="k">import</span> <span class="n">NFSpectrum</span>
+<span class="kn">from</span> <span class="nn">QualityAssessment</span> <span class="k">import</span> <span class="n">ErrorVectorMagnitude</span>
+<span class="kn">from</span> <span class="nn">QualityAssessment</span> <span class="k">import</span> <span class="n">BitErrorRatio</span>
+<span class="kn">from</span> <span class="nn">QualityAssessment</span> <span class="k">import</span> <span class="n">ConstellationDiagram</span>
+<span class="kn">from</span> <span class="nn">QualityAssessment</span> <span class="k">import</span> <span class="n">ModulationEfficiency</span>
+<span class="kn">import</span> <span class="nn">Helpers.plot</span> <span class="k">as</span> <span class="nn">hplt</span>
+<span class="kn">from</span> <span class="nn">Helpers</span> <span class="k">import</span> <span class="n">checked_get</span>
+
+<div class="viewcode-block" id="BaseExample"><a class="viewcode-back" href="../../examples.html#Examples.BaseExample">[docs]</a><span class="k">class</span> <span class="nc">BaseExample</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for examples. All example classes should be derived from this</span>
+<span class="sd">    class.</span>
+
+<span class="sd">    An example class should set all parameters that users are encouraged to</span>
+<span class="sd">    change as public attributes during construction. The constructor should not</span>
+<span class="sd">    ask additional parameters from the user. After setting the attributes, the</span>
+<span class="sd">    constructor of the example class should configure itself by calling</span>
+<span class="sd">    reconfigure(). This method needs to be implemented by the example class</span>
+<span class="sd">    itself.</span>
+
+<span class="sd">    The reconfigure method should set the following private attributes based on</span>
+<span class="sd">    the public attributes of the example class set during construction:</span>
+
+<span class="sd">    - _constellation</span>
+<span class="sd">    - _modulator</span>
+<span class="sd">    - _link</span>
+<span class="sd">    - _normalization</span>
+<span class="sd">    - _tx_filter</span>
+<span class="sd">    - _rx_filter</span>
+
+<span class="sd">    Users are provided read-only access to these private attributes through the</span>
+<span class="sd">    properties constellation, modulator, link, normalization, tx_filter and</span>
+<span class="sd">    rx_filter, respectively, which are already implemented in this base class.</span>
+
+<span class="sd">    The private attributes above should be objects of a class derived from the</span>
+<span class="sd">    corresponding base classes, i.e., BaseConstellation, BaseModulator,</span>
+<span class="sd">    BaseLink, Normalization and BaseFilter, respectively.</span>
+
+<span class="sd">    Users should be able to change any of the public attributes set in the</span>
+<span class="sd">    constructor, after which they are expected to manually call reconfigure().</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">constellation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides read-only access to self._constellation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">checked_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_constellation&quot;</span><span class="p">,</span> <span class="n">BaseConstellation</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">modulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides read-only access to self._modulator.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">checked_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_modulator&quot;</span><span class="p">,</span> <span class="n">BaseModulator</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">link</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides read-only access to self._link.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">checked_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_link&quot;</span><span class="p">,</span> <span class="n">BaseLink</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">normalization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides read-only access to self._normalization.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">checked_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_normalization&quot;</span><span class="p">,</span> <span class="n">BaseNormalization</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tx_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides read-only access to self._tx_filter.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">checked_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_tx_filter&quot;</span><span class="p">,</span> <span class="n">BaseFilter</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rx_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides read-only access to self._rx_filter.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">checked_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_rx_filter&quot;</span><span class="p">,</span> <span class="n">BaseFilter</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BaseExample.reconfigure"><a class="viewcode-back" href="../../examples.html#Examples.BaseExample.reconfigure">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">reconfigure</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Updates self._constellation, self._modulator, self._link,</span>
+<span class="sd">        self._normalization, self._tx_filter and self._rx_filter based on the</span>
+<span class="sd">        public attributes set in the constructor.</span>
+
+<span class="sd">        Any example needs to implement this.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseExample.prepare_fiber_input"><a class="viewcode-back" href="../../examples.html#Examples.BaseExample.prepare_fiber_input">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_fiber_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_blocks</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generates random fiber inputs that can be passed to</span>
+<span class="sd">        transceiver_fiber_input().</span>
+
+<span class="sd">        The function generates n_blocks pulses. For each pulse, it draws</span>
+<span class="sd">        self.modulator.n_symbols_per_block random symbols from the</span>
+<span class="sd">        constellation. It then uses the modulator to generate the corresponding</span>
+<span class="sd">        fiber inputs both in the time and nonlinear Fourier domain. The time</span>
+<span class="sd">        domain input is denormalized to real-world units using the</span>
+<span class="sd">        normalization.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_blocks : int</span>
+<span class="sd">            Number of blocks (pulses) to be generated.</span>
+<span class="sd">        seed : None or int</span>
+<span class="sd">            If not None, this seed is to initialize the random number generator.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tx_data : dictionary</span>
+<span class="sd">            Dictionary with the fields</span>
+
+<span class="sd">            &quot;t&quot; : numpy.array(float)</span>
+<span class="sd">                Vector of time points.</span>
+<span class="sd">            &quot;q&quot; : array</span>
+<span class="sd">                Array of length n_blocks containing the generated pulses q_tx(t).</span>
+<span class="sd">                Each element of the array is a numpy.array(complex) vector which</span>
+<span class="sd">                contains the values of q_tx(t) at the corresponding time</span>
+<span class="sd">                specified in the &quot;t&quot; field.</span>
+<span class="sd">            &quot;nfspecs&quot; : array</span>
+<span class="sd">                Array containing the nonlinear Fourier spectra of the generated</span>
+<span class="sd">                pulses. Each element of the array is a NFSpectrum object.</span>
+<span class="sd">            &quot;symbols&quot; : array</span>
+<span class="sd">                Array containing the tx symbols. Each entry of the array is a</span>
+<span class="sd">                numpy.array(complex) vector that the contains the symbols</span>
+<span class="sd">                modulated into the corresponding pulse q(t).</span>
+<span class="sd">            &quot;n_blocks&quot; : int</span>
+<span class="sd">                Number of blocks that was provided to this function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">modulator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modulator</span>
+        <span class="n">constellation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">constellation</span>
+        <span class="n">normalization</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization</span>
+        <span class="n">n_symbols_per_block</span> <span class="o">=</span> <span class="n">modulator</span><span class="o">.</span><span class="n">n_symbols_per_block</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">modulator</span><span class="o">.</span><span class="n">n_samples</span>
+
+        <span class="n">tx_data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">normalization</span><span class="o">.</span><span class="n">denorm_time</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_blocks</span><span class="o">*</span><span class="n">D</span><span class="p">)</span>
+                                                 <span class="o">*</span> <span class="n">modulator</span><span class="o">.</span><span class="n">normalized_dt</span><span class="p">)</span>
+        <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_blocks</span><span class="o">*</span><span class="n">D</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+        <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;nfspecs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_blocks</span><span class="o">*</span><span class="n">n_symbols_per_block</span><span class="p">,</span>
+                                      <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_blocks</span><span class="p">):</span>
+            <span class="n">symbol_indices_tx</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">constellation</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span>
+                                            <span class="n">n_symbols_per_block</span><span class="p">)</span>
+            <span class="n">symbols_tx_block</span> <span class="o">=</span> <span class="n">constellation</span><span class="o">.</span><span class="n">idx2symbol</span><span class="p">(</span><span class="n">symbol_indices_tx</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">q_tx_block</span><span class="p">,</span> <span class="n">nfspec_tx_block</span><span class="p">)</span> <span class="o">=</span> <span class="n">modulator</span><span class="o">.</span><span class="n">modulate</span><span class="p">(</span><span class="n">symbols_tx_block</span><span class="p">)</span>
+            <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">][</span><span class="n">n</span><span class="o">*</span><span class="n">D</span><span class="p">:(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">D</span><span class="p">]</span> <span class="o">=</span> <span class="n">q_tx_block</span>
+            <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;nfspecs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nfspec_tx_block</span><span class="p">)</span>
+            <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">][</span><span class="n">n</span><span class="o">*</span><span class="n">n_symbols_per_block</span><span class="p">:(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">n_symbols_per_block</span><span class="p">]</span> <span class="o">=</span> <span class="n">symbols_tx_block</span>
+
+        <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tx_filter</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">])</span>
+        <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">normalization</span><span class="o">.</span><span class="n">denorm_field</span><span class="p">(</span><span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">])</span>
+        <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;n_blocks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_blocks</span>
+        <span class="k">return</span> <span class="n">tx_data</span></div>
+
+<div class="viewcode-block" id="BaseExample.transceive_fiber_input"><a class="viewcode-back" href="../../examples.html#Examples.BaseExample.transceive_fiber_input">[docs]</a>    <span class="k">def</span> <span class="nf">transceive_fiber_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Transmits and demodulates fiber inputs generated by</span>
+<span class="sd">        prepare_fiber_input().</span>
+
+<span class="sd">        The function concatenates the individual time domain pulses in tx_data</span>
+<span class="sd">        and transmits the results using the link. It then splits the received</span>
+<span class="sd">        signal again into blocks, denormalizes each block and estimates the</span>
+<span class="sd">        received symbols using the modulator.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        tx_data : dictionary</span>
+<span class="sd">            Data generated by prepare_fiber_input()</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dictionary</span>
+<span class="sd">            Dictionary with the fields</span>
+
+<span class="sd">            &quot;t&quot; : numpy.array(float)</span>
+<span class="sd">                Vector of time points (in secs)</span>
+<span class="sd">            &quot;q&quot; : array</span>
+<span class="sd">                Array of length n_blocks containing the fiber outputs q_rx(t).</span>
+<span class="sd">                Each element of the array is a numpy.array(complex) vector which</span>
+<span class="sd">                contains the values of q_rx(t) at the corresponding time specified</span>
+<span class="sd">                in the &quot;t&quot; field.</span>
+<span class="sd">            &quot;nfspecs&quot; : array</span>
+<span class="sd">                Array containing the nonlinear Fourier spectra of the received</span>
+<span class="sd">                pulses. Each element of the array is a NFSpectrum object.</span>
+<span class="sd">            &quot;symbols&quot; : array</span>
+<span class="sd">                Array containing the rx symbols. Each entry of the array is a</span>
+<span class="sd">                numpy.array(complex) vector that the contains the symbols</span>
+<span class="sd">                modulated into the corresponding pulse q_rx(t).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">modulator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modulator</span>
+        <span class="n">constellation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">constellation</span>
+        <span class="n">normalization</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization</span>
+        <span class="n">n_symbols_per_block</span> <span class="o">=</span> <span class="n">modulator</span><span class="o">.</span><span class="n">n_symbols_per_block</span>
+        <span class="n">n_blocks</span> <span class="o">=</span> <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;n_blocks&quot;</span><span class="p">]</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">modulator</span><span class="o">.</span><span class="n">n_samples</span>
+
+        <span class="n">rx_data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span>
+        <span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">link</span><span class="o">.</span><span class="n">transmit</span><span class="p">(</span><span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">])</span>
+        <span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rx_filter</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">])</span>
+        <span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;nfspecs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_blocks</span><span class="o">*</span><span class="n">n_symbols_per_block</span><span class="p">,</span>
+                                      <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_blocks</span><span class="p">):</span>
+            <span class="n">q_rx_block_norm</span> <span class="o">=</span> <span class="n">normalization</span><span class="o">.</span><span class="n">norm_field</span><span class="p">(</span><span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">][</span><span class="n">n</span><span class="o">*</span><span class="n">D</span><span class="p">:(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">D</span><span class="p">])</span>
+            <span class="p">(</span><span class="n">symbols_rx_block</span><span class="p">,</span> <span class="n">nfspec_rx_block</span><span class="p">)</span> <span class="o">=</span> <span class="n">modulator</span><span class="o">.</span><span class="n">demodulate</span><span class="p">(</span><span class="n">q_rx_block_norm</span><span class="p">)</span>
+            <span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;nfspecs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nfspec_rx_block</span><span class="p">)</span>
+            <span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">][</span><span class="n">n</span><span class="o">*</span><span class="n">n_symbols_per_block</span><span class="p">:(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">n_symbols_per_block</span><span class="p">]</span> <span class="o">=</span> <span class="n">symbols_rx_block</span>
+        <span class="k">return</span> <span class="n">rx_data</span></div>
+
+<div class="viewcode-block" id="BaseExample.run"><a class="viewcode-back" href="../../examples.html#Examples.BaseExample.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_blocks</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This function performs a complete simulation. It first calls</span>
+<span class="sd">        prepare_fiber_inputs() to generate the tx_data, passes it</span>
+<span class="sd">        transceive_fiber_input() in order to obtain rx_data, and returns both.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_blocks : int</span>
+<span class="sd">            See the documentation of prepare_fiber_input()</span>
+<span class="sd">        seed : int</span>
+<span class="sd">            See the documentation of prepare_fiber_input()</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tx_data : dictionary</span>
+<span class="sd">            See the description of prepare_fiber_input(...).</span>
+<span class="sd">        rx_data : dictionary</span>
+<span class="sd">            See the description of transceive_fiber_input(...).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tx_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_fiber_input</span><span class="p">(</span><span class="n">n_blocks</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>
+        <span class="n">rx_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transceive_fiber_input</span><span class="p">(</span><span class="n">tx_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tx_data</span><span class="p">,</span> <span class="n">rx_data</span></div>
+
+<div class="viewcode-block" id="BaseExample.evaluate_results"><a class="viewcode-back" href="../../examples.html#Examples.BaseExample.evaluate_results">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx_data</span><span class="p">,</span> <span class="n">rx_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Evaluates the results of a simulation by showing several plots and</span>
+<span class="sd">        printing some key measures to the console.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        tx_data : dictionary</span>
+<span class="sd">            Fiber input data generated by run() or prepare_fiber_inputs()</span>
+<span class="sd">        rx_data : dictionary</span>
+<span class="sd">            Fiber output data generated by run() or transceive_fiber_inputs()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">hplt</span><span class="o">.</span><span class="n">plot_q</span><span class="p">(</span><span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">],</span> <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">],</span> <span class="s2">&quot;Fiber input&quot;</span><span class="p">,</span> <span class="n">new_fig</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">hplt</span><span class="o">.</span><span class="n">plot_q</span><span class="p">(</span><span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">],</span> <span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">],</span> <span class="s2">&quot;Fiber output&quot;</span><span class="p">,</span> <span class="n">new_fig</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;nfspecs&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">new_fig</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Nonlinear Fourier spectrum of the first block&quot;</span><span class="p">)</span>
+        <span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;nfspecs&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">legend</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tx&quot;</span><span class="p">,</span> <span class="s2">&quot;rx&quot;</span><span class="p">])</span>
+
+        <span class="n">constellation_diagram</span> <span class="o">=</span> <span class="n">ConstellationDiagram</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constellation</span><span class="p">)</span>
+        <span class="n">constellation_diagram</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">],</span> <span class="n">new_fig</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">error_vector_magnitude</span> <span class="o">=</span> <span class="n">ErrorVectorMagnitude</span><span class="p">()</span>
+        <span class="n">evm</span> <span class="o">=</span> <span class="n">error_vector_magnitude</span><span class="o">.</span><span class="n">in_dB</span><span class="p">(</span><span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">],</span> <span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">])</span>
+
+        <span class="n">bit_error_ratio</span> <span class="o">=</span> <span class="n">BitErrorRatio</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constellation</span><span class="p">)</span>
+        <span class="n">ber</span><span class="p">,</span> <span class="n">nerr</span><span class="p">,</span> <span class="n">nbits</span> <span class="o">=</span> <span class="n">bit_error_ratio</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">],</span> <span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">])</span>
+
+        <span class="n">modulation_efficiency</span> <span class="o">=</span> <span class="n">ModulationEfficiency</span><span class="p">()</span>
+        <span class="n">eff</span><span class="p">,</span> <span class="n">br</span><span class="p">,</span> <span class="n">bw_rx</span> <span class="o">=</span> <span class="n">modulation_efficiency</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">],</span> <span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">],</span> <span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">],</span> <span class="n">nerr</span><span class="p">,</span> <span class="n">nbits</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">bw_tx</span> <span class="o">=</span> <span class="n">modulation_efficiency</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">],</span> <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">],</span> <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">tx_power_level</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">rx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">tx_power_level_in_dBm</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">tx_power_level</span> <span class="o">/</span> <span class="mf">0.001</span><span class="p">)</span>
+
+        <span class="n">link_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">link</span><span class="o">.</span><span class="n">span_length</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">link</span><span class="o">.</span><span class="n">n_spans</span>
+        <span class="n">block_duration</span> <span class="o">=</span> <span class="p">(</span><span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;n_blocks&quot;</span><span class="p">]</span>
+        <span class="n">bw_sim</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Link length =&quot;</span><span class="p">,</span> <span class="n">link_length</span><span class="o">*</span><span class="mf">1e-3</span><span class="p">,</span> <span class="s2">&quot;km&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nonlinear length =&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">link</span><span class="o">.</span><span class="n">nonlinear_length</span><span class="p">(</span><span class="n">tx_data</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">])</span><span class="o">*</span><span class="mf">1e-3</span><span class="p">,</span> <span class="s2">&quot;km&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Span length =&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">link</span><span class="o">.</span><span class="n">span_length</span><span class="o">*</span><span class="mf">1e-3</span><span class="p">,</span> <span class="s2">&quot;km&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Block duration =&quot;</span><span class="p">,</span> <span class="n">block_duration</span><span class="o">*</span><span class="mf">1e9</span><span class="p">,</span> <span class="s2">&quot;ns&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tx Power Level =&quot;</span><span class="p">,</span> <span class="n">tx_power_level_in_dBm</span><span class="p">,</span> <span class="s2">&quot;dBm&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tx signal bandwidth = &quot;</span><span class="p">,</span> <span class="n">bw_tx</span><span class="o">*</span><span class="mf">1e-9</span><span class="p">,</span> <span class="s2">&quot;GHz&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Rx signal bandwidth = &quot;</span><span class="p">,</span> <span class="n">bw_rx</span><span class="o">*</span><span class="mf">1e-9</span><span class="p">,</span> <span class="s2">&quot;GHz&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Simulation bandwidth = &quot;</span><span class="p">,</span> <span class="n">bw_sim</span><span class="o">*</span><span class="mf">1e-9</span><span class="p">,</span> <span class="s2">&quot;GHz&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Gross bit rate =&quot;</span><span class="p">,</span> <span class="n">br</span><span class="o">*</span><span class="mf">1e-9</span><span class="p">,</span> <span class="s2">&quot;Gbit/s&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Modulation efficiency =&quot;</span><span class="p">,</span> <span class="n">eff</span><span class="p">,</span> <span class="s2">&quot;bits/s/Hz&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Bit error ratio (uncoded) =&quot;</span><span class="p">,</span> <span class="n">ber</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error vector magnitude =&quot;</span><span class="p">,</span> <span class="n">evm</span><span class="p">,</span> <span class="s2">&quot;dB&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">NFDMLab</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../code_doc.html">Code documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../videos.html">Videos</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,160 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Installation &#8212; NFDMLab  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting Started" href="getting_started.html" />
+    <link rel="prev" title="NFDMLAB: Simulating Nonlinear Frequency Division Multiplexing in Python" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="automatic-installation-under-ubuntu-18-04">
+<h2>Automatic Installation under Ubuntu 18.04<a class="headerlink" href="#automatic-installation-under-ubuntu-18-04" title="Permalink to this headline">¶</a></h2>
+<p>Users of <a class="reference external" href="https://www.ubuntu.com/download/desktop">Ubuntu Linux 18.04</a> may use an automatic installation script.</p>
+<p>Open a terminal and execute the commands</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget -nc https://github.com/FastNFT/NFDMLab/raw/master/ubuntu_1804_install.sh
+bash ./ubuntu_1804_install.sh
+<span class="nb">source</span> ~/.bashrc
+</pre></div>
+</div>
+<p>This script will install NFDMLab in the folder <code class="docutils literal notranslate"><span class="pre">~/git/nfdmlab</span></code>. Proceed to the section <a class="reference internal" href="#testing"><span class="std std-ref">Testing the Installation</span></a> below after installation.</p>
+</div>
+<div class="section" id="manual-installation">
+<h2>Manual Installation<a class="headerlink" href="#manual-installation" title="Permalink to this headline">¶</a></h2>
+<p>NFDMLab is developed under Linux and written in <a class="reference external" href="https://www.python.org">Python</a>. Please make sure that a recent version of Python 3 is available on your computer. It should be possible to install NFDMLab under other operating systems, but we have no experience with such setups. Before NFDMLab can be run, the following dependencies have to be installed.</p>
+<ol class="arabic simple">
+<li><a class="reference external" href="https://matplotlib.org">Matplotlib</a>, <a class="reference external" href="http://www.numpy.org">NumPy</a> and <a class="reference external" href="https://www.scipy.org">SciPy</a></li>
+<li><a class="reference external" href="https://jupyter.org">Jupyter Notebooks</a> (optional, only for interactive examples)</li>
+<li><a class="reference external" href="https://github.com/FastNFT/FNFT">FNFT</a></li>
+<li><a class="reference external" href="https://github.com/xmhk/FNFTpy">FNFTpy</a></li>
+</ol>
+<p>Please see the documentations of these packages for details on how to install them. After installation of the dependencies, download a recent <a class="reference external" href="https://github.com/FastNFT/NFDMLab/releases">release of NFDMLab</a>, extract the files into some directory and proceed to the section <a class="reference internal" href="#testing"><span class="std std-ref">Testing the Installation</span></a>.</p>
+</div>
+<div class="section" id="testing-the-installation">
+<span id="testing"></span><h2>Testing the Installation<a class="headerlink" href="#testing-the-installation" title="Permalink to this headline">¶</a></h2>
+<p>Once all required components are installed, change into the directory that contains NFDMLab and start Python. For example, if you used the installation script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> ~/git/nfdmlab
+python3
+</pre></div>
+</div>
+<p>Then, in Python, try the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">Examples</span>
+<span class="n">ex</span> <span class="o">=</span> <span class="n">Examples</span><span class="o">.</span><span class="n">BuelowArefIdler2016</span><span class="p">()</span>
+<span class="p">[</span><span class="n">tx_data</span><span class="p">,</span> <span class="n">rx_data</span><span class="p">]</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">ex</span><span class="o">.</span><span class="n">evaluate_results</span><span class="p">(</span><span class="n">tx_data</span><span class="p">,</span> <span class="n">rx_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or load one of the files in Notebook directory in Jupyter for the interactive version:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jupyter notebook Notebooks/BuelowArefIdler2016.ipynb
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">NFDMLab</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#automatic-installation-under-ubuntu-18-04">Automatic Installation under Ubuntu 18.04</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#manual-installation">Manual Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing-the-installation">Testing the Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_doc.html">Code documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="videos.html">Videos</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">NFDMLAB: Simulating Nonlinear Frequency Division Multiplexing in Python</a></li>
+      <li>Next: <a href="getting_started.html" title="next chapter">Getting Started</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/installation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

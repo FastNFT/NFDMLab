@@ -1,0 +1,167 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Modulators.CarrierWaveforms &#8212; NFDMLab  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Modulators.CarrierWaveforms</h1><div class="highlight"><pre>
+<span></span><span class="c1"># This file is part of NFDMLab.</span>
+<span class="c1">#</span>
+<span class="c1"># NFDMLab is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the version 2 of the GNU General</span>
+<span class="c1"># Public License as published by the Free Software Foundation.</span>
+<span class="c1">#</span>
+<span class="c1"># NFDMLab is distributed in the hope that it will be useful, but</span>
+<span class="c1"># WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public</span>
+<span class="c1"># License along with NFDMLab; if not, write to the Free Software</span>
+<span class="c1"># Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA</span>
+<span class="c1"># 02111-1307 USA</span>
+<span class="c1">#</span>
+<span class="c1"># Contributors:</span>
+<span class="c1"># Sander Wahls (TU Delft) 2018</span>
+<span class="c1"># Shrinivas Chimmalgi (TU Delft) 2018</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="flat_top"><a class="viewcode-back" href="../../modulators.html#Modulators.CarrierWaveforms.flat_top">[docs]</a><span class="k">def</span> <span class="nf">flat_top</span><span class="p">(</span><span class="n">xivec</span><span class="p">,</span> <span class="n">T0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Flat-top carrier that is bandlimited with bandwidth 2*T0. The effective</span>
+<span class="sd">    bandwidth, based on visual inspection in linear scale, is around T0.</span>
+
+<span class="sd">    The top of this filter has a width of approximately 20/T0. The visible</span>
+<span class="sd">    bottom (in linear scale) has a width of approximately 45/T0.&quot;&quot;&quot;</span>
+    <span class="n">tophat_coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.007812499990869</span><span class="p">,</span> <span class="mf">2.015624999967228</span><span class="p">,</span>
+                              <span class="mf">2.015624998481229</span><span class="p">,</span> <span class="mf">2.015624285101227</span><span class="p">,</span>
+                              <span class="mf">2.015576901606147</span><span class="p">,</span> <span class="mf">2.014596710132849</span><span class="p">,</span>
+                              <span class="mf">2.005424182936140</span><span class="p">,</span> <span class="mf">1.958132920846161</span><span class="p">,</span>
+                              <span class="mf">1.807566405118839</span><span class="p">,</span> <span class="mf">1.490558213477831</span><span class="p">,</span>
+                              <span class="mf">1.031171573261926</span><span class="p">,</span> <span class="mf">0.563957100582878</span><span class="p">,</span>
+                              <span class="mf">0.229897459751809</span><span class="p">,</span> <span class="mf">0.064961507923051</span><span class="p">,</span>
+                              <span class="mf">0.011287414498426</span><span class="p">,</span> <span class="mf">0.000905697614070</span><span class="p">])</span>
+
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">tophat_coeffs</span><span class="p">));</span>
+    <span class="n">ns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">xivec</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ns</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">xi</span> <span class="o">=</span> <span class="n">xivec</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">tophat_coeffs</span><span class="p">,(</span> <span class="n">np</span><span class="o">.</span><span class="n">sinc</span><span class="p">(</span><span class="n">xi</span><span class="o">*</span><span class="n">T0</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">-</span><span class="n">tmp</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sinc</span><span class="p">(</span><span class="n">xi</span><span class="o">*</span><span class="n">T0</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">+</span><span class="n">tmp</span><span class="p">)))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">ns</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">ns</span><span class="p">):</span>
+            <span class="n">xi</span> <span class="o">=</span> <span class="n">xivec</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+            <span class="n">vals</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">tophat_coeffs</span><span class="p">,(</span> <span class="n">np</span><span class="o">.</span><span class="n">sinc</span><span class="p">(</span><span class="n">xi</span><span class="o">*</span><span class="n">T0</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">-</span><span class="n">tmp</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sinc</span><span class="p">(</span><span class="n">xi</span><span class="o">*</span><span class="n">T0</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">+</span><span class="n">tmp</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">vals</span></div>
+
+<span class="k">def</span> <span class="nf">raised_cosine</span><span class="p">(</span><span class="n">xivec</span><span class="p">,</span> <span class="n">roll_off_factor</span><span class="p">,</span> <span class="n">T0</span><span class="p">):</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sinc</span><span class="p">(</span><span class="n">xivec</span><span class="o">/</span><span class="n">T0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">vals</span><span class="p">):</span>
+        <span class="n">xivec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xivec</span><span class="p">])</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">vals</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">roll_off_factor</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">vals</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">xivec</span><span class="p">)</span> <span class="o">-</span> <span class="n">T0</span><span class="o">/</span><span class="mf">2.0</span><span class="o">/</span><span class="n">roll_off_factor</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">10.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">xivec</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
+    <span class="n">vals</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">4.0</span>
+    <span class="n">vals</span><span class="p">[</span><span class="o">~</span><span class="n">idx</span><span class="p">]</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">roll_off_factor</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">xivec</span><span class="p">[</span><span class="o">~</span><span class="n">idx</span><span class="p">]</span><span class="o">/</span><span class="n">T0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">roll_off_factor</span><span class="o">*</span><span class="n">xivec</span><span class="p">[</span><span class="o">~</span><span class="n">idx</span><span class="p">]</span><span class="o">/</span><span class="n">T0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vals</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">NFDMLab</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../code_doc.html">Code documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../videos.html">Videos</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

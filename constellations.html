@@ -1,0 +1,374 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Constellations &#8212; NFDMLab  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Filters" href="filters.html" />
+    <link rel="prev" title="Code documentation" href="code_doc.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="constellations">
+<h1>Constellations<a class="headerlink" href="#constellations" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="Constellations.BaseConstellation">
+<em class="property">class </em><code class="descclassname">Constellations.</code><code class="descname">BaseConstellation</code><a class="reference internal" href="_modules/Constellations/BaseConstellation.html#BaseConstellation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Constellations.BaseConstellation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for constellations such as QAM or PSK.</p>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li>Other constellations should be derived from this class. They need to initialize self._alphabet, which is returned by the alphabet property, self._bit_matrix, which is returned by the bit_matrix property, and self._str, which is returned by the str property.</li>
+<li>Bits are represented by the numbers zero and one.</li>
+</ul>
+<dl class="attribute">
+<dt id="Constellations.BaseConstellation.alphabet">
+<code class="descname">alphabet</code><a class="headerlink" href="#Constellations.BaseConstellation.alphabet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Vector of constellation points. The number of
+points has to be a power of two.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.array (<a class="reference external" href="https://docs.python.org/2/library/functions.html#complex" title="(in Python v2.7)">complex</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Constellations.BaseConstellation.bit_matrix">
+<code class="descname">bit_matrix</code><a class="headerlink" href="#Constellations.BaseConstellation.bit_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Matrix of bit patterns.</p>
+<p>The size of the matrix should be N x M, where N is the size of the
+alphabet and M is the number of bits per symbol. The n-th row of the
+matrix contains the bit pattern of the n-th symbol in the alphabet. The
+allowed values in the matrix are zero and one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">numpy.array(<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)">int</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Constellations.BaseConstellation.gray_code">
+<code class="descname">gray_code</code><span class="sig-paren">(</span><em>m</em>, <em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Constellations/BaseConstellation.html#BaseConstellation.gray_code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Constellations.BaseConstellation.gray_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gray code bit matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>m</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – </li>
+<li><strong>n</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Matrix as described in the bit_matrix property. The number of bit patterns (rows) is m*n. The number of bits per pattern (columns) is ceil(log2(m*n)).</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.array(<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)">int</a>)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Constellations.BaseConstellation.idx2bits">
+<code class="descname">idx2bits</code><span class="sig-paren">(</span><em>idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Constellations/BaseConstellation.html#BaseConstellation.idx2bits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Constellations.BaseConstellation.idx2bits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translates a vector of indices into a bit pattern.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>idx</strong> (<em>numpy.array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#complex" title="(in Python v2.7)"><em>complex</em></a><em>)</em>) – Vector of indices</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Vector of bits</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.array(<a class="reference external" href="https://docs.python.org/2/library/functions.html#complex" title="(in Python v2.7)">complex</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Constellations.BaseConstellation.idx2symbol">
+<code class="descname">idx2symbol</code><span class="sig-paren">(</span><em>idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Constellations/BaseConstellation.html#BaseConstellation.idx2symbol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Constellations.BaseConstellation.idx2symbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translates a vector of indices into a vector of symbols.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>idx</strong> (<em>numpy.array</em><em>(</em><em>integer</em><em>)</em>) – Vector of indices.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A array with the same length as idx whose n-th element is
+self.alphabet[idx[n]].</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.array(<a class="reference external" href="https://docs.python.org/2/library/functions.html#complex" title="(in Python v2.7)">complex</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Constellations.BaseConstellation.name">
+<code class="descname">name</code><a class="headerlink" href="#Constellations.BaseConstellation.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Identifcation string for the constellation, should also specify parameters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Constellations.BaseConstellation.show">
+<code class="descname">show</code><span class="sig-paren">(</span><em>new_fig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Constellations/BaseConstellation.html#BaseConstellation.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Constellations.BaseConstellation.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shows the constellation alphabet together with the bit patterns.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>new_fig</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Always creates a new figure if True, reuses existing figures if False.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">matplotlib figure handle (only if new_fig=True)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Figure</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Constellations.BaseConstellation.size">
+<code class="descname">size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Constellations/BaseConstellation.html#BaseConstellation.size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Constellations.BaseConstellation.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>int : Number of elements in the alphabet.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Constellations.BaseConstellation.symbol2idx">
+<code class="descname">symbol2idx</code><span class="sig-paren">(</span><em>symbols</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Constellations/BaseConstellation.html#BaseConstellation.symbol2idx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Constellations.BaseConstellation.symbol2idx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translates a vector of symbols into a vector of indices.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>symbols</strong> (<em>numpy.array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#complex" title="(in Python v2.7)"><em>complex</em></a><em>)</em>) – Vector of symbols.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A vector with the same length as symbols whose n-th element is the
+integer number i=i(n) in 0,…,numpy.size(symbols)-1 that minimizes
+the Eucledian distance |symbols[n] - self.alphabet[i]|.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.array(integer)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Constellations.MPSKConstellation">
+<em class="property">class </em><code class="descclassname">Constellations.</code><code class="descname">MPSKConstellation</code><span class="sig-paren">(</span><em>m</em>, <em>rotate_by_delta_half=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Constellations/MPSKConstellation.html#MPSKConstellation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Constellations.MPSKConstellation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Phase shift keying (PSK) modulation. Implements BaseConstellation.</p>
+<dl class="method">
+<dt id="Constellations.MPSKConstellation.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>m</em>, <em>rotate_by_delta_half=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Constellations/MPSKConstellation.html#MPSKConstellation.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Constellations.MPSKConstellation.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contructor for a PSK constellation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>m</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of constellation points</li>
+<li><strong>rotate_by_delta_half</strong> (<em>Boolean</em>) – Rotate constellation by 2pi/m</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Constellations.QAMConstellation">
+<em class="property">class </em><code class="descclassname">Constellations.</code><code class="descname">QAMConstellation</code><span class="sig-paren">(</span><em>m</em>, <em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Constellations/QAMConstellation.html#QAMConstellation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Constellations.QAMConstellation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quadrature amplitude modulation (QAM) constellation (implements BaseConstellation).</p>
+<dl class="method">
+<dt id="Constellations.QAMConstellation.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>m</em>, <em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Constellations/QAMConstellation.html#QAMConstellation.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Constellations.QAMConstellation.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor for a m x n QAM constellation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>m</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of rows in the constellation.</li>
+<li><strong>n</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of columns in the constellation.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Constellations.ReshapedQAMConstellation">
+<em class="property">class </em><code class="descclassname">Constellations.</code><code class="descname">ReshapedQAMConstellation</code><span class="sig-paren">(</span><em>m</em>, <em>n</em>, <em>b0_fun</em>, <em>Ed</em>, <em>bnds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Constellations/ReshapedQAMConstellation.html#ReshapedQAMConstellation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Constellations.ReshapedQAMConstellation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reshaped quadrature amplitude modulation (QAM) constellation (implements
+BaseConstellation).</p>
+<p>The goal of the reshaping procedure is to fit the average (normalized)
+energy of the generated pulses to a desired value Ed. For details, see
+Gui et al., Opt. Express 26(21), 2018.</p>
+<dl class="method">
+<dt id="Constellations.ReshapedQAMConstellation.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>m</em>, <em>n</em>, <em>b0_fun</em>, <em>Ed</em>, <em>bnds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Constellations/ReshapedQAMConstellation.html#ReshapedQAMConstellation.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Constellations.ReshapedQAMConstellation.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor for a reshaped m x n QAM constellation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>m</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – </li>
+<li><strong>n</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – </li>
+<li><strong>b0_fun</strong> (<em>function</em>) – Carrier waveform. The function should maps any input vector of the
+type numpy.array(float), which represents a vector of nonlinear
+frequencies xi, to a output vector of the type numpy.array(complex),
+which represents the values of the carrier waveform at these xi.</li>
+<li><strong>Ed</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Desired average energy of the generated pulses (with respect to
+normalized units). Should be positive.</li>
+<li><strong>bnds</strong> (<em>numpy.array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a><em>)</em>) – Vector with two entries [a,b], which are used as initial bounds in
+the bisection produdure based on which the constellation is
+reshaped. It should be 0&lt;a&lt;b.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">NFDMLab</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="code_doc.html">Code documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Constellations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filters.html">Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="helpers.html">Helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="links.html">Links</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modulators.html">Modulators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qualityassessment.html">Quality Assessment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="videos.html">Videos</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="code_doc.html">Code documentation</a><ul>
+      <li>Previous: <a href="code_doc.html" title="previous chapter">Code documentation</a></li>
+      <li>Next: <a href="filters.html" title="next chapter">Filters</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/constellations.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

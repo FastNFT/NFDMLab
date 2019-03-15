@@ -1,0 +1,300 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Helpers &#8212; NFDMLab  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Normalization" href="normalization.html" />
+    <link rel="prev" title="Filters" href="filters.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-Helpers">
+<span id="helpers"></span><h1>Helpers<a class="headerlink" href="#module-Helpers" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="Helpers.NFSpectrum">
+<em class="property">class </em><code class="descclassname">Helpers.</code><code class="descname">NFSpectrum</code><span class="sig-paren">(</span><em>cont_type</em>, <em>disc_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Helpers/NFSpectrum.html#NFSpectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Helpers.NFSpectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores and plots nonlinear Fourier spectra.</p>
+<p>The following attributes can be set/read by the user:</p>
+<dl class="docutils">
+<dt>xi <span class="classifier-delimiter">:</span> <span class="classifier">np.array(float)</span></dt>
+<dd>Nonlinear frequency grid (a vector).</dd>
+<dt>cont <span class="classifier-delimiter">:</span> <span class="classifier">np.array(complex)</span></dt>
+<dd>Vector specficying the continuous spectrum at the nonlinear frequencies
+in xi. Has to be of the type specified during construction.</dd>
+<dt>bound_states <span class="classifier-delimiter">:</span> <span class="classifier">np.array(complex)</span></dt>
+<dd>Vector containing the bound states (eigenvalues).</dd>
+<dt>normconsts <span class="classifier-delimiter">:</span> <span class="classifier">np.array(complex)</span></dt>
+<dd>Vector specifying the residues (b/a’) or norming constants (b) for each
+of the bound states.</dd>
+<dt>xi_plot_range <span class="classifier-delimiter">:</span> <span class="classifier">np.array(float)</span></dt>
+<dd>Vector of length two with xi_plot_range[0]&lt;xi_plot_range[1]. Speficies
+the xi range shown when the continuous spectrum is plotted using show().
+The default is an empty vector [], in which case no range are set.</dd>
+<dt>bound_state_plot_range <span class="classifier-delimiter">:</span> <span class="classifier">np.array(float)</span></dt>
+<dd>Vector of length four of the form [re_min, re_max, im_min, im_max].
+Speficies the range of real/imaginary parts for the bound states when
+the bound states are plotted using show(). The default is an empty
+vector [], in which case no ranges are set.</dd>
+</dl>
+<dl class="method">
+<dt id="Helpers.NFSpectrum.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>cont_type</em>, <em>disc_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Helpers/NFSpectrum.html#NFSpectrum.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Helpers.NFSpectrum.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor. Initializes all attributes mentioned above except
+cont_type and disc_type to empty values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cont_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – See the cont_type property.</li>
+<li><strong>disc_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – See the disc_type property.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Helpers.NFSpectrum.__weakref__">
+<code class="descname">__weakref__</code><a class="headerlink" href="#Helpers.NFSpectrum.__weakref__" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Helpers.NFSpectrum.cont_type">
+<code class="descname">cont_type</code><a class="headerlink" href="#Helpers.NFSpectrum.cont_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of the continuous spectrum stored in this object (read-only, set
+during construction).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>“none”</strong> (<em>str</em>) – if no continuous spectrum is stored.</li>
+<li><strong>”b/a”</strong> (<em>str</em>) – if the continuous spectrum is a reflection coefficient.</li>
+<li><strong>”b”</strong> (<em>str</em>) – if the continuous spectrum is a b-coefficient.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Helpers.NFSpectrum.disc_type">
+<code class="descname">disc_type</code><a class="headerlink" href="#Helpers.NFSpectrum.disc_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of the discrete spectrum stored in this object (read-only, set
+during construction).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>“none”</strong> (<em>str</em>) – if no discrete spectrum is stored.</li>
+<li><strong>”b/a’”</strong> (<em>str</em>) – if the discrete spectrum contains eigenvalues and residues.</li>
+<li><strong>”b”</strong> (<em>str</em>) – if the discrete spectrum contains eigenvalues and norming constants.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Helpers.NFSpectrum.show">
+<code class="descname">show</code><span class="sig-paren">(</span><em>new_fig=False</em>, <em>title=None</em>, <em>legend=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Helpers/NFSpectrum.html#NFSpectrum.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Helpers.NFSpectrum.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the nonlinear Fourier spectrum stored in this object. This
+routine can be called repeatedly, in which several plots are shown
+in the same figure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>new_fig</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – If True, a new figute is created by the routine.</li>
+<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Title of the plot.</li>
+<li><strong>legend</strong> (<em>array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a><em>)</em>) – Array of legend entries. If None, no legend is added.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Figure object, only if new_fig==True.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">matplotlib.figure object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Helpers.NFSpectrum.show_contspec_angle">
+<code class="descname">show_contspec_angle</code><span class="sig-paren">(</span><em>ax</em>, <em>legend=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Helpers/NFSpectrum.html#NFSpectrum.show_contspec_angle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Helpers.NFSpectrum.show_contspec_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the angle (phase) of the continous spectrum.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ax</strong> (<em>matplotlib.axes object</em>) – Axes used for plotting.</li>
+<li><strong>legend</strong> (<em>array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a><em>)</em>) – Array of legend entries. If None, no legend is added.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Helpers.NFSpectrum.show_contspec_mag">
+<code class="descname">show_contspec_mag</code><span class="sig-paren">(</span><em>ax</em>, <em>legend=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Helpers/NFSpectrum.html#NFSpectrum.show_contspec_mag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Helpers.NFSpectrum.show_contspec_mag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the magnitude of the continous spectrum.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ax</strong> (<em>matplotlib.axes object</em>) – Axes used for plotting.</li>
+<li><strong>legend</strong> (<em>array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a><em>)</em>) – Array of legend entries. If None, no legend is added.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Helpers.NFSpectrum.show_discspec">
+<code class="descname">show_discspec</code><span class="sig-paren">(</span><em>ax</em>, <em>legend=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Helpers/NFSpectrum.html#NFSpectrum.show_discspec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Helpers.NFSpectrum.show_discspec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the bound states of the discrete spectrum.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ax</strong> (<em>matplotlib.axes object</em>) – Axes used for plotting.</li>
+<li><strong>legend</strong> (<em>array</em><em>(</em><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a><em>)</em>) – Array of legend entries. If None, no legend is added.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-Helpers.plot"></span><span class="target" id="module-Helpers.widgets"></span></div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">NFDMLab</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="code_doc.html">Code documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="constellations.html">Constellations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filters.html">Filters</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="links.html">Links</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modulators.html">Modulators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qualityassessment.html">Quality Assessment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="videos.html">Videos</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="code_doc.html">Code documentation</a><ul>
+      <li>Previous: <a href="filters.html" title="previous chapter">Filters</a></li>
+      <li>Next: <a href="normalization.html" title="next chapter">Normalization</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/helpers.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

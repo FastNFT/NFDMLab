@@ -1,0 +1,267 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Modulators.DiscSpecModulator &#8212; NFDMLab  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Modulators.DiscSpecModulator</h1><div class="highlight"><pre>
+<span></span><span class="c1"># This file is part of NFDMLab.</span>
+<span class="c1">#</span>
+<span class="c1"># NFDMLab is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the version 2 of the GNU General</span>
+<span class="c1"># Public License as published by the Free Software Foundation.</span>
+<span class="c1">#</span>
+<span class="c1"># NFDMLab is distributed in the hope that it will be useful, but</span>
+<span class="c1"># WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public</span>
+<span class="c1"># License along with NFDMLab; if not, write to the Free Software</span>
+<span class="c1"># Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA</span>
+<span class="c1"># 02111-1307 USA</span>
+<span class="c1">#</span>
+<span class="c1"># Contributors:</span>
+<span class="c1"># Sander Wahls (TU Delft) 2018</span>
+<span class="c1"># Shrinivas Chimmalgi (TU Delft) 2018</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">FNFTpy.fnft_nsev_inverse_wrapper</span> <span class="k">import</span> <span class="n">nsev_inverse_wrapper</span><span class="p">,</span> <span class="n">nsev_inverse_xi_wrapper</span>
+<span class="kn">from</span> <span class="nn">FNFTpy.options_handling</span> <span class="k">import</span> <span class="n">fnft_nsev_inverse_default_options_wrapper</span>
+<span class="kn">from</span> <span class="nn">FNFTpy.fnft_nsev_wrapper</span> <span class="k">import</span> <span class="n">nsev_wrapper</span>
+<span class="kn">from</span> <span class="nn">FNFTpy.options_handling</span> <span class="k">import</span> <span class="n">fnft_nsev_default_options_wrapper</span>
+<span class="kn">from</span> <span class="nn">Modulators</span> <span class="k">import</span> <span class="n">BaseModulator</span>
+<span class="kn">from</span> <span class="nn">Helpers</span> <span class="k">import</span> <span class="n">NFSpectrum</span>
+<span class="kn">from</span> <span class="nn">Helpers</span> <span class="k">import</span> <span class="n">next_pow2</span>
+
+<div class="viewcode-block" id="DiscSpecModulator"><a class="viewcode-back" href="../../modulators.html#Modulators.DiscSpecModulator">[docs]</a><span class="k">class</span> <span class="nc">DiscSpecModulator</span><span class="p">(</span><span class="n">BaseModulator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This modulator embeds symbols in residues of a multi-soliton with fixed</span>
+<span class="sd">    eigenvalue pattern.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DiscSpecModulator.__init__"><a class="viewcode-back" href="../../modulators.html#Modulators.DiscSpecModulator.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">residues_amplitude</span><span class="p">,</span> <span class="n">normalized_distance</span><span class="p">,</span>
+                 <span class="n">T</span><span class="p">,</span> <span class="n">required_normalized_dt</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        eigenvalues : numpy.array(complex)</span>
+<span class="sd">            Vector of eigenvalues used to generate fiber inputs.</span>
+<span class="sd">        residues_amplitude : numpy.array(complex)</span>
+<span class="sd">            Vector of scaling factors. The final residues for the eigenvalue is</span>
+<span class="sd">            obtained by multiplying these factors with the symbols.</span>
+<span class="sd">        normalized_distance : float</span>
+<span class="sd">            Fiber length in normalized units.</span>
+<span class="sd">        T : numpy.array(float)</span>
+<span class="sd">            Vector of length two with T[0]&lt;T[1]. Specifies the time interval, in</span>
+<span class="sd">            normalized units, used for the generation of the fiber inputs.</span>
+<span class="sd">        required_normalized_dt : float</span>
+<span class="sd">            The modulator will choose the number of time domain samples such</span>
+<span class="sd">            that the time step, in normalized units, does not exceed this value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Save some parameters for later use.</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eigenvalues</span> <span class="o">=</span> <span class="n">eigenvalues</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_residues_amplitude</span> <span class="o">=</span> <span class="n">residues_amplitude</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_normalized_distance</span> <span class="o">=</span> <span class="n">normalized_distance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_symbols_per_block</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">residues_amplitude</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_symbols_per_block</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_T</span> <span class="o">=</span> <span class="n">T</span>
+
+        <span class="c1"># Determine number of samples and time step from time step requirements</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_samples</span> <span class="o">=</span> <span class="n">next_pow2</span><span class="p">((</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">required_normalized_dt</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_normalized_dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Setup options for the forward and inverse NFT</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_opts_inv</span> <span class="o">=</span> <span class="n">fnft_nsev_inverse_default_options_wrapper</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_opts_fwd</span> <span class="o">=</span> <span class="n">fnft_nsev_default_options_wrapper</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_opts_inv</span><span class="o">.</span><span class="n">discspec_type</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># residues</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_opts_fwd</span><span class="o">.</span><span class="n">discspec_type</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># residues</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_opts_fwd</span><span class="o">.</span><span class="n">contspec_type</span> <span class="o">=</span> <span class="mi">3</span> <span class="c1"># skip computation of continuous spectrum</span></div>
+
+    <span class="k">def</span> <span class="nf">_new_nfspec</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generates an empty NFSpectrum object with the right discspec_type and</span>
+<span class="sd">        plotting hints.&quot;&quot;&quot;</span>
+
+        <span class="n">nfspec</span> <span class="o">=</span> <span class="n">NFSpectrum</span><span class="p">(</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;b/a&#39;&quot;</span><span class="p">)</span>
+        <span class="n">nfspec</span><span class="o">.</span><span class="n">bound_state_plot_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">nfspec</span><span class="o">.</span><span class="n">bound_state_plot_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eigenvalues</span><span class="p">))</span>
+        <span class="n">nfspec</span><span class="o">.</span><span class="n">bound_state_plot_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eigenvalues</span><span class="p">))</span>
+        <span class="n">nfspec</span><span class="o">.</span><span class="n">bound_state_plot_range</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eigenvalues</span><span class="p">))</span>
+        <span class="n">nfspec</span><span class="o">.</span><span class="n">bound_state_plot_range</span> <span class="o">*=</span> <span class="mf">1.5</span>
+        <span class="k">return</span> <span class="n">nfspec</span>
+
+<div class="viewcode-block" id="DiscSpecModulator.modulate"><a class="viewcode-back" href="../../modulators.html#Modulators.DiscSpecModulator.modulate">[docs]</a>    <span class="k">def</span> <span class="nf">modulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbols</span><span class="p">):</span>
+        <span class="c1"># Docstring is inherited from base class.</span>
+
+        <span class="c1"># Determine residues</span>
+
+        <span class="n">nc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">nc</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_symbols_per_block</span>
+        <span class="n">residues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_residues_amplitude</span><span class="o">*</span><span class="n">symbols</span>
+
+        <span class="c1"># Call inverse NFT to generate the multi-soliton</span>
+
+        <span class="n">rdict</span> <span class="o">=</span> <span class="n">nsev_inverse_wrapper</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span>
+                                     <span class="p">[],</span>
+                                     <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                                     <span class="mi">1</span><span class="p">,</span>
+                                     <span class="n">nc</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">_eigenvalues</span><span class="p">,</span>
+                                     <span class="n">residues</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">_T</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">_T</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                     <span class="o">+</span><span class="mi">1</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">_opts_inv</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rdict</span><span class="p">[</span><span class="s1">&#39;return_value&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;FNFT failed&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Save generated nonlinear Fourier spectrum for the user</span>
+
+        <span class="n">nfspec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_new_nfspec</span><span class="p">()</span>
+        <span class="n">nfspec</span><span class="o">.</span><span class="n">bound_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eigenvalues</span>
+        <span class="n">nfspec</span><span class="o">.</span><span class="n">normconsts</span> <span class="o">=</span> <span class="n">residues</span>
+
+        <span class="k">return</span> <span class="n">rdict</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">],</span> <span class="n">nfspec</span></div>
+
+
+<div class="viewcode-block" id="DiscSpecModulator.demodulate"><a class="viewcode-back" href="../../modulators.html#Modulators.DiscSpecModulator.demodulate">[docs]</a>    <span class="k">def</span> <span class="nf">demodulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="c1"># Docstring is inherited from base class.</span>
+
+        <span class="c1"># Call NFT to obtain discrete spectrum</span>
+
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span>
+        <span class="n">rdict</span> <span class="o">=</span> <span class="n">nsev_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span><span class="p">,</span>
+                             <span class="n">q</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">_T</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">_T</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                             <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                             <span class="mi">1</span><span class="p">,</span>
+                             <span class="mi">0</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">n_symbols_per_block</span><span class="p">,</span>
+                             <span class="o">+</span><span class="mi">1</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">_opts_fwd</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rdict</span><span class="p">[</span><span class="s1">&#39;return_value&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;FNFT failed&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Save nonlinear Fourier spectrum for the user, add plotting hints</span>
+
+        <span class="n">nfspec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_new_nfspec</span><span class="p">()</span>
+        <span class="n">nfspec</span><span class="o">.</span><span class="n">normconsts</span> <span class="o">=</span> <span class="n">rdict</span><span class="p">[</span><span class="s1">&#39;disc_res&#39;</span><span class="p">]</span>
+        <span class="n">nfspec</span><span class="o">.</span><span class="n">bound_states</span> <span class="o">=</span> <span class="n">rdict</span><span class="p">[</span><span class="s1">&#39;bound_states&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Recover symbols from residues</span>
+
+        <span class="n">symbols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_symbols_per_block</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+        <span class="n">phase_shifts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="n">j</span><span class="o">*</span><span class="n">nfspec</span><span class="o">.</span><span class="n">bound_states</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_normalized_distance</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rdict</span><span class="p">[</span><span class="s1">&#39;bound_states_num&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_symbols_per_block</span><span class="p">):</span>
+                <span class="n">dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eigenvalues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">nfspec</span><span class="o">.</span><span class="n">bound_states</span><span class="p">)</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dists</span><span class="p">)</span>
+                <span class="n">symbols</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase_shifts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">*</span><span class="n">nfspec</span><span class="o">.</span><span class="n">normconsts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_residues_amplitude</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">nfspec</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">NFDMLab</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../code_doc.html">Code documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../videos.html">Videos</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
