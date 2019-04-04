@@ -16,6 +16,7 @@
 #
 # Contributors:
 # Marius Brehler (TU Dortmund) 2018-2019
+# Marius Brehler 2019
 
 import ipywidgets as widgets
 from ipywidgets import Layout
@@ -157,7 +158,7 @@ def update_alpha(choosen_amplification,noise_widget,path_average_widget):
         path_average_widget.value = True
     elif choosen_amplification == "Raman":
         from scipy.io import loadmat
-        matfile = loadmat('../data/gainprofile_40steps.mat')
+        matfile = loadmat('../Data/gainprofile_40steps.mat')
         selected_alpha = matfile['gain'].flatten()
         noise_widget.disabled = True
         noise_widget.value = False
