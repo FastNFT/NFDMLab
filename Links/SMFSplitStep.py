@@ -17,6 +17,7 @@
 # Contributors:
 # Sander Wahls (TU Delft) 2018-2019
 # Marius Brehler (TU Dortmund) 2018-2019
+# Marius Brehler 2019
 
 from Links import BaseLink
 from Links._ssprop import _ssprop
@@ -78,7 +79,7 @@ class SMFSplitStep(BaseLink):
         self._dt = dt
         self._dz = dz
         self._nz = nz
-        self._alpha = alpha *np.log(10)*0.05
+        self._alpha = alpha *np.log(10)*0.1
         self._gain = self._dz * self._nz * alpha
         self._beta2 = beta2
         self._gamma = gamma

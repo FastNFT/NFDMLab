@@ -1,3 +1,4 @@
+# Copyright 2019, Marius Brehler
 # Copyright 2018, Sander Wahls (TU Delft)
 # Copyright 2018, Marius Brehler (TU Dortmund)
 # Copyright 2006, Thomas E. Murphy
@@ -73,11 +74,7 @@ def _ssprop(u0,dt,dz,nz,alpha,betap,gamma,maxiter=4,tol=1e-5):
     w = 2*np.pi*np.hstack((np.arange(0, nt/2), np.arange(-nt/2, 0)))/(dt*nt)
 
     halfstep = 0
-    if np.size(alpha) == 1:
-        halfstep = -alpha/2
-    elif np.size(alpha) == nz:
-        haltstep = 0
-    else:
+    if (np.size(alpha) != 1) & (np.size(alpha) != nz):
         raise Exception('alpha is neither constant nor is the vector of length nz')
 
     for ii in range(0, np.size(betap)):
