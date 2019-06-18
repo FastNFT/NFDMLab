@@ -271,10 +271,27 @@ class ContSpecModulator(BaseModulator):
 
         symbols = np.zeros(self.n_symbols_per_block, dtype=complex)
         scl = np.abs(self._carrier_waveform_fun(0.0)) * self._power_control_factor
-        for n in range(0, self.n_symbols_per_block):
-            symbols[n] = nfspec.cont[self._carrier_center_idx[n]]
-            if self._use_power_normalization_map:
-                symbols[n] = np.sqrt(np.log(np.abs(symbols[n])**2 + 1.0)) * np.exp(1j*np.angle(symbols[n]))
-            symbols[n] /= scl
+        matched_fiter = True
+        if matched_fiter:
+            percentage_averaging = 70      # % of carrier spacing. It specifies range of 'xi' to average for symbol detection
+            xi_avg_range = 0.5*self._carrier_spacing*percentage_averaging/100 # xi range for averaging
+            idx_diff = int(xi_avg_range/self._dxi)         # get the index difference 
+            carrier_shape_filter = self._carrier_waveform_fun(self._xi[int(self._M/2)-idx_diff:int(self._M/2)+idx_diff])# get carrier shape for the filter
+            for n in range(0, self.n_symbols_per_block):
+                idx_l = self._carrier_center_idx[n] - idx_diff # lower index of the xi average range; 
+                idx_u = self._carrier_center_idx[n] + idx_diff # upper index of the xi average range;                 
+                matched_filtered_data = np.multiply(nfspec.cont[idx_l:idx_u],carrier_shape_filter)
+                symbols[n] = np.mean(matched_filtered_data)/np.mean(carrier_shape_filter)
+                if self._use_power_normalization_map:
+                    symbols[n] = np.sqrt(np.log(np.abs(symbols[n])**2 + 1.0)) * np.exp(1j*np.angle(symbols[n]))
+                symbols[n] /= scl
+            
+        else:
+            for n in range(0, self.n_symbols_per_block):
+                symbols[n] = nfspec.cont[self._carrier_center_idx[n]]
+                print('carrier centers',self._carrier_center_idx[n])
+                if self._use_power_normalization_map:
+                    symbols[n] = np.sqrt(np.log(np.abs(symbols[n])**2 + 1.0)) * np.exp(1j*np.angle(symbols[n]))
+                symbols[n] /= scl
 
         return symbols, nfspec
