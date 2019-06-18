@@ -71,6 +71,8 @@ class GuiEtAl2018(BaseExample):
         the fiber transmission."""
 
         # Modulator parameters
+        self.constellation_type = 'QAM'
+        """We support 'QAM' and 'PSK'."""
 
         self.constellation_level = 16
         """Level of the QAM constellation used as input for the reshaping
@@ -115,14 +117,18 @@ class GuiEtAl2018(BaseExample):
             self._normalization = Lossless(self.beta2, self.gamma, self.Tscale)
 
         # Constellation
-
-        from Constellations import ReshapedQAMConstellation
-        m = int(math.sqrt(self.constellation_level))
-        assert self.constellation_level == m*m
-        bnds = np.array([0, 4/np.abs(carrier_waveform(0.0))])
-        self._constellation = ReshapedQAMConstellation(m, m,
-                                                       carrier_waveform,
-                                                       self.Ed, bnds)
+        if self.constellation_type == 'QAM':
+            from Constellations import ReshapedQAMConstellation
+            m = int(math.sqrt(self.constellation_level))
+            assert self.constellation_level == m*m
+            bnds = np.array([0, 4/np.abs(carrier_waveform(0.0))])
+            self._constellation = ReshapedQAMConstellation(m, m,carrier_waveform,self.Ed, bnds)
+        elif self.constellation_type == 'PSK':
+            from Constellations import ReshapedPSKConstellation
+            bnds = np.array([0,4/np.abs(carrier_waveform(0.0))])
+            self._constellation = ReshapedPSKConstellation(self.constellation_level,carrier_waveform,self.Ed,bnds)
+        else:
+            raise Exception('Constellation not supported')
 
         # Modulator
 
