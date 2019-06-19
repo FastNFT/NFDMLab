@@ -21,3 +21,4 @@ from Modulators.BaseModulator import BaseModulator
 from Modulators.ContSpecModulator import ContSpecModulator
 from Modulators.DiscSpecModulator import DiscSpecModulator
 from Modulators.DDFDiscSpecModulator import DDFDiscSpecModulator
+from Modulators.DDFContSpecModulator import DDFContSpecModulator

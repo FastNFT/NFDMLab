@@ -22,3 +22,4 @@ from Examples.BuelowArefIdler2016 import BuelowArefIdler2016
 from Examples.LeArefBuelow2017 import LeArefBuelow2017
 from Examples.GuiEtAl2018 import GuiEtAl2018
 from Examples.BuelowArefIdler2016_DDF import BuelowArefIdler2016_DDF
+from Examples.GuiEtAl2018_DDF import GuiEtAl2018_DDF
