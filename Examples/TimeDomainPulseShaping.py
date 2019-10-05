@@ -3,11 +3,10 @@ import math
 
 from Examples import BaseExample
 from Constellations import QAMConstellation
-import Modulators
 from Links import SMFSplitStep
-from Normalization import Lossless
+from Normalization import Lumped
 from Filters import FFTLowPass, DispersionCompensation, Concatenate
-from Modulators import CarrierWaveforms
+from Modulators import TimeDomainModulator, CarrierWaveforms
 
 class TimeDomainPulseShaping(BaseExample):
     """Convetional time domain pulse shaping with raised cosines and a linear
@@ -77,7 +76,7 @@ class TimeDomainPulseShaping(BaseExample):
         """Compensate for chromatic dispersion at the end of the link. True or
         False."""
 
-        self.tx_gain = 0.25
+        self.tx_gain = 0.065
         """Gain (in linear units) that is applied at the transmitter before
         transmission. Use for power control."""
 
@@ -89,23 +88,40 @@ class TimeDomainPulseShaping(BaseExample):
 
     def reconfigure(self):
 
-        self.pulse_fun = lambda t : self.tx_gain*CarrierWaveforms.raised_cosine(t, self.roll_off_factor, self.T0)
-        self.pulse_spacing = self.T0
-        self.dt = self.T0 / self.dt_factor
+        self._normalization = Lumped(self.beta2,
+                                     self.gamma,
+                                     self.T0,
+                                     self.alpha,
+                                     self.fiber_span_length)
+
+        normalized_T0 = self._normalization.norm_time(self.T0)
+        self.pulse_fun = lambda t : self.tx_gain*CarrierWaveforms.raised_cosine(t, self.roll_off_factor, normalized_T0)
+        self.pulse_spacing = normalized_T0
+        requested_normalized_dt = normalized_T0 / self.dt_factor
 
         m = int(math.sqrt(self.constellation_level))
         assert self.constellation_level == m*m
         self._constellation = QAMConstellation(m, m)
+
+        self._modulator = TimeDomainModulator(self.pulse_fun,
+                                              self.pulse_spacing,
+                                              requested_normalized_dt,
+                                              self.n_symbols_per_block,
+                                              self.n_guard_symbols)
+        self.dt = self._normalization.denorm_time(self._modulator.normalized_dt)
+
         dz = self.fiber_span_length/self.n_steps_per_span
-        self._link = SMFSplitStep(self.dt, dz, self.n_steps_per_span, self.alpha,
-                                  self.beta2, self.gamma, False, self.n_spans,
-                                  self.post_boost, self.noise, self.noise_figure)
-        self._modulator = Modulators.TimeDomainModulator(self.pulse_fun,
-                                                         self.pulse_spacing,
-                                                         self.dt,
-                                                         self.n_symbols_per_block,
-                                                         self.n_guard_symbols)
-        self._normalization = Lossless(1, 1, 1) # = no normalization
+        self._link = SMFSplitStep(self.dt,
+                                  dz,
+                                  self.n_steps_per_span,
+                                  self.alpha,
+                                  self.beta2,
+                                  self.gamma,
+                                  False,
+                                  self.n_spans,
+                                  self.post_boost,
+                                  self.noise,
+                                  self.noise_figure)
 
         self._tx_filter = FFTLowPass(self.tx_bandwidth/2, self.dt)
         rx_lowpass = FFTLowPass(self.rx_bandwidth/2, self.dt)
