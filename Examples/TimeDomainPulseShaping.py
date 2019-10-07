@@ -84,6 +84,9 @@ class TimeDomainPulseShaping(BaseExample):
         """Factor that determines the time domain step size, which is
         proportional to 1/dt_factor."""
 
+        self.make_n_samples_pow2 = False
+        """If true, it is ensured that the number of samples is a power of two."""
+
         self.reconfigure()
 
     def reconfigure(self):
@@ -107,7 +110,8 @@ class TimeDomainPulseShaping(BaseExample):
                                               self.pulse_spacing,
                                               requested_normalized_dt,
                                               self.n_symbols_per_block,
-                                              self.n_guard_symbols)
+                                              self.n_guard_symbols,
+                                              self.make_n_samples_pow2)
         self.dt = self._normalization.denorm_time(self._modulator.normalized_dt)
 
         dz = self.fiber_span_length/self.n_steps_per_span
