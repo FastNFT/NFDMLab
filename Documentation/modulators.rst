@@ -14,3 +14,7 @@ Modulators
 .. autoclass:: Modulators.DiscSpecModulator
     :members:
     :special-members:
+    
+.. autoclass:: Modulators.TimeDomainPulseShapingModulator
+    :members:
+    :special-members:

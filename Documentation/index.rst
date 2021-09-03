@@ -11,6 +11,8 @@ paper:
    <https://doi.org/10.1364/OFC.2019.M3Z.13>`_ Optical Networking and
    Communication Conference & Exhibition (OFC), paper M3Z.13, Mar. 2019.
 
+Please consider citing this paper if NFDMLab contributes to your research.
+
 First Steps
 -----------
 

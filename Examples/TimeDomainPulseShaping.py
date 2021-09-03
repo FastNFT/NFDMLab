@@ -28,7 +28,7 @@ from Filters import FFTLowPass, DispersionCompensation, Concatenate
 from Modulators import TimeDomainPulseShapingModulator, CarrierWaveforms
 
 class TimeDomainPulseShaping(BaseExample):
-    """Convetional time domain pulse shaping with raised cosines and a linear
+    """Conventional time domain pulse shaping with raised cosines and a linear
     dispersion compensation filter."""
 
     def __init__(self):

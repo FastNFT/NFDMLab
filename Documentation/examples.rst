@@ -12,3 +12,6 @@ Examples
 
 .. autoclass:: Examples.GuiEtAl2018
     :members:
+
+.. autoclass:: Examples.TimeDomainPulseShaping
+    :members:
