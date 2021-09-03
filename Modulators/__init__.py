@@ -15,9 +15,9 @@
 # 02111-1307 USA
 #
 # Contributors:
-# Sander Wahls (TU Delft) 2019
+# Sander Wahls (TU Delft) 2019, 2021
 
 from Modulators.BaseModulator import BaseModulator
 from Modulators.ContSpecModulator import ContSpecModulator
 from Modulators.DiscSpecModulator import DiscSpecModulator
-from Modulators.TimeDomainModulator import TimeDomainModulator
+from Modulators.TimeDomainPulseShapingModulator import TimeDomainPulseShapingModulator

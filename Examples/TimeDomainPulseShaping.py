@@ -1,3 +1,22 @@
+# This file is part of NFDMLab.
+#
+# NFDMLab is free software; you can redistribute it and/or
+# modify it under the terms of the version 2 of the GNU General
+# Public License as published by the Free Software Foundation.
+#
+# NFDMLab is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public
+# License along with NFDMLab; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+# 02111-1307 USA
+#
+# Contributors:
+# Sander Wahls (TU Delft) 2019, 2021
+
 import numpy as np
 import math
 
@@ -6,7 +25,7 @@ from Constellations import QAMConstellation
 from Links import SMFSplitStep
 from Normalization import Lumped
 from Filters import FFTLowPass, DispersionCompensation, Concatenate
-from Modulators import TimeDomainModulator, CarrierWaveforms
+from Modulators import TimeDomainPulseShapingModulator, CarrierWaveforms
 
 class TimeDomainPulseShaping(BaseExample):
     """Convetional time domain pulse shaping with raised cosines and a linear
@@ -106,12 +125,12 @@ class TimeDomainPulseShaping(BaseExample):
         assert self.constellation_level == m*m
         self._constellation = QAMConstellation(m, m)
 
-        self._modulator = TimeDomainModulator(self.pulse_fun,
-                                              self.pulse_spacing,
-                                              requested_normalized_dt,
-                                              self.n_symbols_per_block,
-                                              self.n_guard_symbols,
-                                              self.make_n_samples_pow2)
+        self._modulator = TimeDomainPulseShapingModulator(self.pulse_fun,
+                                                          self.pulse_spacing,
+                                                          requested_normalized_dt,
+                                                          self.n_symbols_per_block,
+                                                          self.n_guard_symbols,
+                                                          self.make_n_samples_pow2)
         self.dt = self._normalization.denorm_time(self._modulator.normalized_dt)
 
         dz = self.fiber_span_length/self.n_steps_per_span

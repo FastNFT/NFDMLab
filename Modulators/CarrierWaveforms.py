@@ -15,7 +15,7 @@
 # 02111-1307 USA
 #
 # Contributors:
-# Sander Wahls (TU Delft) 2018
+# Sander Wahls (TU Delft) 2018, 2021
 # Shrinivas Chimmalgi (TU Delft) 2018
 
 import numpy as np
@@ -48,6 +48,8 @@ def flat_top(xivec, T0):
     return vals
 
 def raised_cosine(xivec, roll_off_factor, T0):
+    """Raised-cosine carrier. T0 is the desired carrier spacing (i.e., the
+    distance between two consecutive zeros of the waveform)."""
     vals = np.sinc(xivec/T0)
     if np.isscalar(vals):
         xivec = np.array([xivec])
