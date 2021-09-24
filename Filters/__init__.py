@@ -20,3 +20,5 @@
 from Filters.BaseFilter import BaseFilter
 from Filters.PassThrough import PassThrough
 from Filters.FFTLowPass import FFTLowPass
+from Filters.DispersionCompensation import DispersionCompensation
+from Filters.Concatenate import Concatenate

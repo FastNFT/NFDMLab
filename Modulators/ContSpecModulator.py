@@ -27,6 +27,7 @@ from FNFTpy.options_handling import fnft_nsev_default_options_wrapper
 from Modulators import BaseModulator
 from Helpers import NFSpectrum
 from Helpers import next_pow2
+from Helpers import SumOfShiftedWaveforms
 
 class ContSpecModulator(BaseModulator):
     """This modulator embeds symbols in the continuous spectrum using a classic
@@ -136,11 +137,11 @@ class ContSpecModulator(BaseModulator):
         # Generate some time and nonlinear frequency grids for later use.
 
         self._t = self._T[0] + np.arange(0, self.n_samples)*self.normalized_dt
-        self._xi = self._XI[0] + np.arange(0, self._M)*self._dxi
-        self._carrier_centers = (np.arange(0, n_symbols_per_block)-(n_symbols_per_block-1)/2.0)*carrier_spacing
-        self._carrier_center_idx = np.zeros(n_symbols_per_block, dtype=int)
-        for n in range(0, n_symbols_per_block):
-            self._carrier_center_idx[n] = np.argmin(abs(self._xi - self._carrier_centers[n]))
+        xi = self._XI[0] + np.arange(0, self._M)*self._dxi
+        self._sum_shifted_carriers = SumOfShiftedWaveforms(carrier_waveform_fun,
+                                                           carrier_spacing,
+                                                           n_symbols_per_block,
+                                                           xi)
 
         # Set the right type of continuos spectrum for the NFT routines.
 
@@ -154,23 +155,11 @@ class ContSpecModulator(BaseModulator):
             raise Exception("Unknown contspec_type '"+str(self._contspec_type)+"'")
         self._opts_fwd.discspec_type = 3 # skip computation of discrete spectrum
 
-        # Determine interval [xi_min, xi_max] outside of which the carrier
-        # waveform is effectively zero. This is essential to speed the
-        # modulation process when the number of carriers is getting larger.
-
-        vals = self._carrier_waveform_fun(self._xi)
-        tol = 10 * np.finfo(vals[0]).eps * np.max(np.abs(vals))
-        idx = np.argwhere(np.abs(vals)>tol)
-        i1 = idx[0][0]
-        i2 = idx[-1][0]
-        self._xi_min = self._xi[i1]
-        self._xi_max = self._xi[i2]
-
     def _new_nfspec(self):
         """Generates an empty NFSpectrum object with the right contspec_type and
         plotting hints."""
         nfspec = NFSpectrum(self._contspec_type, "none")
-        nfspec.xi = self._xi
+        nfspec.xi = self._sum_shifted_carriers.grid
         nfspec.xi_plot_range = np.array([-1.5, 1.5])*self.n_symbols_per_block/2*self._carrier_spacing
         return nfspec
 
@@ -183,13 +172,7 @@ class ContSpecModulator(BaseModulator):
         nc = np.size(symbols)
         assert nc == self.n_symbols_per_block
         nfspec = self._new_nfspec()
-        nfspec.cont = np.zeros(self._M, dtype=complex)
-        for n in range(0, nc):
-            shifted_xi = self._xi - self._carrier_centers[n]
-            idx = np.logical_and(shifted_xi>=self._xi_min, shifted_xi<=self._xi_max)
-            nfspec.cont[idx] = nfspec.cont[idx] + symbols[n]*self._carrier_waveform_fun(shifted_xi[idx])
-        for n in range(0, nc):
-            i = self._carrier_center_idx[n]
+        nfspec.cont = self._sum_shifted_carriers.generate_waveform(symbols)
 
         # Apply the power control factor and, if requested, the power
         # normalization map
@@ -202,15 +185,16 @@ class ContSpecModulator(BaseModulator):
 
         # Pre-equalize for the phase change induced by the channel
 
-        nfspec.cont *= np.exp(-2.0j*self._xi**2*self._normalized_distance*(self._percent_precompensation/100))
+        xi = self._sum_shifted_carriers.grid
+        nfspec.cont *= np.exp(-2.0j*xi**2*self._normalized_distance*(self._percent_precompensation/100))
 
         # Generate corresponding time domain signal on the extended grid
         # specified construction
 
         rdict = nsev_inverse_wrapper(self._M,
                                      nfspec.cont,
-                                     self._XI[0],
-                                     self._XI[1],
+                                     xi[0],
+                                     xi[-1],
                                      0,
                                      [],
                                      [],
@@ -264,17 +248,16 @@ class ContSpecModulator(BaseModulator):
         # Remove any remaining phase changes due to the channel that have not
         # already been removed at the transmitter
 
-        nfspec.cont *= np.exp(-2.0j*self._xi**2*self._normalized_distance
+        xi = self._sum_shifted_carriers.grid
+        nfspec.cont *= np.exp(-2.0j*xi**2*self._normalized_distance
                                *(1 - self._percent_precompensation/100))
 
         # Recover the symbols
 
-        symbols = np.zeros(self.n_symbols_per_block, dtype=complex)
-        scl = np.abs(self._carrier_waveform_fun(0.0)) * self._power_control_factor
-        for n in range(0, self.n_symbols_per_block):
-            symbols[n] = nfspec.cont[self._carrier_center_idx[n]]
+        symbols = self._sum_shifted_carriers.extract_symbols(nfspec.cont)
+        for n in range(0, np.size(symbols)):
             if self._use_power_normalization_map:
                 symbols[n] = np.sqrt(np.log(np.abs(symbols[n])**2 + 1.0)) * np.exp(1j*np.angle(symbols[n]))
-            symbols[n] /= scl
+            symbols[n] /= self._power_control_factor
 
         return symbols, nfspec
