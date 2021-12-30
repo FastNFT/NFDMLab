@@ -56,9 +56,8 @@ class LeArefBuelow2017(BaseExample):
         self.gamma = 1.6e-3
         """Nonlinearity coefficient in (W m)**(-1)."""
 
-        self.fiber_type = "SMF"
-        """Fiber type: standard fiber."""
-
+        self.fiber_type = "SSMF"
+        """Fiber type: "DDF" dispersion decreasing fiber or "SSMF" standard single mode fiber."""
         self.Tscale = 4e-10
         """Time scale used during normalization in s."""
 

@@ -40,9 +40,8 @@ class GuiEtAl2018(BaseExample):
         self.gamma = 1.2e-3
         """Nonlinearity parameter in (W m)**(-1)."""
 
-        self.fiber_type = "SMF"
-        """Fiber type: standard fiber."""
-
+        self.fiber_type = "SSMF"
+        """Fiber type: "DDF" dispersion decreasing fiber or "SSMF" standard single mode fiber."""
         self.Tscale = 1.25e-9 # s
         """Time scale used during normalization in s."""
 

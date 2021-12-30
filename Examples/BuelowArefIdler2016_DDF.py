@@ -44,7 +44,7 @@ class BuelowArefIdler2016_DDF(BaseExample):
         """Nonlinearity coefficient in (W m)**(-1)."""
 
         self.fiber_type = "DDF"
-        """Fiber type: dispersion decreasing fiber."""
+        """Fiber type: "DDF" dispersion decreasing fiber or "SSMF" standard single mode fiber."""
 
         self.Tscale = 4.1022e-11
 
@@ -127,7 +127,8 @@ class BuelowArefIdler2016_DDF(BaseExample):
         from Links.DDF_profile import Get_Beta_Gamma_Profile
         dz = self.fiber_span_length/self.n_steps_per_span
         nz = self.n_spans*self.n_steps_per_span
-        profile = Get_Beta_Gamma_Profile(self.alpha*np.log(10)*0.1, self.beta2, self.gamma, dz, self.n_steps_per_span)
+        profile = Get_Beta_Gamma_Profile(self.alpha * np.log(10) * 0.1, self.beta2, self.gamma, dz,
+                                         self.n_steps_per_span)
 
         # Modulator
 

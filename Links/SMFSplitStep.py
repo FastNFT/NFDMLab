@@ -35,7 +35,7 @@ class SMFSplitStep(BaseLink):
     polarization to the ASE noise are not included.
     """
 
-    def __init__(self, dt, dz, nz, fiber_type='SMF',
+    def __init__(self, dt, dz, nz, fiber_type='SSMF',
                  alpha=0.0, beta2=1.0, gamma=-1.0,
                  verbose=False, n_spans=1,
                  post_boost=False, noise=False, noise_figure=3,
@@ -51,6 +51,7 @@ class SMFSplitStep(BaseLink):
             Spatial step in m.
         nz : int
             Number of spatial steps for one fiber span.
+        fiber_type : 'SSMF' standard single mode fiber (default) or 'DDF' dispersion decreasing fiber.
         alpha : float or numpy.array(float)
             Fiber loss coefficient in 1/m. It is possible to pass a vector of
             length nz in order to specify an individual loss coefficient for
@@ -148,18 +149,19 @@ class SMFSplitStep(BaseLink):
 
     def transmit(self, input):
         # Docstring is inherited from base class.
+        # Depending on the fiber type choose the fiber propagation solver either the standard ssprop or DDF ssprop.
         if self._fiber_type == 'DDF':
             profile = Get_Beta_Gamma_Profile(self._alpha, self._beta2, self._gamma, self._dz, self._nz)
             self._BETA2 = profile['BETA2']
             self._GAMMA = profile['GAMMA']
-            simulate_fiber_prop = _DDFssprop
+            solve_propagation = _DDFssprop
             disp_nl_profile = (self._BETA2, self._GAMMA)
         else:
-            simulate_fiber_prop = _ssprop
+            solve_propagation = _ssprop
             disp_nl_profile = ([0., 0., -self._beta2], -self._gamma)
 
         if self._n_spans == 1:
-            uu = simulate_fiber_prop(input, self._dt, self._dz, self._nz, self._alpha, disp_nl_profile[0], disp_nl_profile[1])
+            uu = solve_propagation(input, self._dt, self._dz, self._nz, self._alpha, disp_nl_profile[0], disp_nl_profile[1])
 
             if self._post_boost == True:
                 if self._alpha.size != 1:
@@ -171,7 +173,7 @@ class SMFSplitStep(BaseLink):
         else:
             uu = input
             for span_i in range(0,self._n_spans):
-                uu = simulate_fiber_prop(uu, self._dt, self._dz, self._nz, self._alpha, disp_nl_profile[0], disp_nl_profile[1] )
+                uu = solve_propagation(uu, self._dt, self._dz, self._nz, self._alpha, disp_nl_profile[0], disp_nl_profile[1] )
 
                 if self._verbose:
                     print("Finished span",span_i+1)

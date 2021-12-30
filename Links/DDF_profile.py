@@ -1,14 +1,63 @@
+# This file is part of NFDMLab.
+#
+# NFDMLab is free software; you can redistribute it and/or
+# modify it under the terms of the version 2 of the GNU General
+# Public License as published by the Free Software Foundation.
+#
+# NFDMLab is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public
+# License along with NFDMLab; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+# 02111-1307 USA
+#
+# Contributors:
+# Sander Wahls (TU Delft) 2018-2019
+# Shrinivas Chimmalgi (TU Delft) 2019
+# Vinod Bajaj (TU Delft) 2019
+
 import numpy as np
-def Get_Beta_Gamma_Profile(alpha, beta2, gamma, dz, nz):
-    ''' Returns the Beta2 and Gamma profile (vector) ie z dependent values
-    The function reuqires attenuation parameter and intial value of Beta2(0) and GAMMA(0)
-    and span length as input.'''
+def Get_Beta_Gamma_Profile(alpha, beta20, gamma0, dz, nz):
+    ''' Returns the group velocity dispersion parameter and nonlinear parameter axial profile (vector) ie z dependent values such that
+    for given attenuation coefficient the fiber model is exactly solvable.
+    The function solves a cubic equation to find suitable values of GVM paramter and nonlinear parameter.
+    For details: see
+    Bajaj, Vinod, et al. "Exact NFDM transmission in the presence of fiber-loss." Journal of Lightwave Technology 38.11 (2020): 3051-3058.
+
+    USAGE
+
+    profile = Get_Beta_Gamma_Profile(alpha, beta20, gamma0, dz, nz)
+
+
+    INPUT
+
+    alpha - power loss coefficient, ie, P=P0*exp(-alpha*z)
+    betap - group velocity dispersion at the starting end of the fiber
+    gamma - nonlinearity coefficient at the starting end of the fiber
+    dz - propagation stepsize
+    nz - number of steps to take, ie, ztotal = dz*nz
+
+    OUTPUT
+
+    profile - a dictionary with fiber profile parameters
+              with keys:
+              'Rad_z' : fiber radius along the length
+              'BETA2' : group velocity dispersion parameter along the length
+              'GAMMA' : nonlinear parameter along the length
+              'D_z' : normalized dispersion parameter profile along the length (normalized w.r.t start-end dispersion value)
+              'R_z' : normalized nonlinear parameter profile along the length (normalized w.r.t start-end nonlinear parameter value)
+              'avg_D_z' : average normalized dispersion parameter (used for modified NFT)
+              'avg_R_z' : average normalized nonlinear parameter
+    '''
     alpha = alpha/2 # convert to field attenuation.
     c = 3e8   # light speed m/s
     lambda0 = 1.55e-6    # center wavelength
     kappa = lambda0**2*1e-6/(2*np.pi*c)
-    BETA20 = abs(beta2)
-    GAMMA0 = abs(gamma)
+    BETA20 = abs(beta20)
+    GAMMA0 = abs(gamma0)
     R0 = (BETA20/kappa + 20)/8      # core radius in micro meter
     n2 = GAMMA0*(lambda0*np.pi*(R0*1e-6)**2)/(2*np.pi)
     #dz = dz

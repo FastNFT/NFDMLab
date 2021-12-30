@@ -48,8 +48,7 @@ class GuiEtAl2018_DDF(BaseExample):
         """Nonlinearity parameter in (W m)**(-1)."""
 
         self.fiber_type = "DDF"
-        """Fiber type: dispersion decreasing fiber."""
-
+        """Fiber type: "DDF" dispersion decreasing fiber or "SSMF" standard single mode fiber."""
         self.Tscale = 1.25e-9 # s
         """Time scale used during normalization in s."""
 
@@ -144,7 +143,8 @@ class GuiEtAl2018_DDF(BaseExample):
 
         from Links.DDF_profile import Get_Beta_Gamma_Profile
         dz = self.fiber_span_length/self.n_steps_per_span
-        profile = Get_Beta_Gamma_Profile(self.alpha*np.log(10)*0.1, self.beta2, self.gamma, dz, self.n_steps_per_span)
+        profile = Get_Beta_Gamma_Profile(self.alpha * np.log(10) * 0.1, self.beta2, self.gamma, dz,
+                                         self.n_steps_per_span)
 
 
 
