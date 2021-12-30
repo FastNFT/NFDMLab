@@ -56,6 +56,9 @@ class LeArefBuelow2017(BaseExample):
         self.gamma = 1.6e-3
         """Nonlinearity coefficient in (W m)**(-1)."""
 
+        self.fiber_type = "SMF"
+        """Fiber type: standard fiber."""
+
         self.Tscale = 4e-10
         """Time scale used during normalization in s."""
 
@@ -215,6 +218,7 @@ class LeArefBuelow2017(BaseExample):
         self._link = SMFSplitStep(dt,
                                   dz,
                                   self.n_steps_per_span,
+                                  self.fiber_type,
                                   self.alpha,
                                   self.beta2,
                                   self.gamma,

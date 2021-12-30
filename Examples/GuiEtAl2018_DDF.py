@@ -47,6 +47,9 @@ class GuiEtAl2018_DDF(BaseExample):
         self.gamma = 1.3e-3
         """Nonlinearity parameter in (W m)**(-1)."""
 
+        self.fiber_type = "DDF"
+        """Fiber type: dispersion decreasing fiber."""
+
         self.Tscale = 1.25e-9 # s
         """Time scale used during normalization in s."""
 
@@ -137,29 +140,36 @@ class GuiEtAl2018_DDF(BaseExample):
             self._constellation = ReshapedPSKConstellation(self.constellation_level,carrier_waveform,self.Ed,bnds)
         else:
             raise Exception('Constellation not supported')
+
+
+        from Links.DDF_profile import Get_Beta_Gamma_Profile
+        dz = self.fiber_span_length/self.n_steps_per_span
+        profile = Get_Beta_Gamma_Profile(self.alpha*np.log(10)*0.1, self.beta2, self.gamma, dz, self.n_steps_per_span)
+
+
+
         # Modulator
 
-        from Modulators import DDFContSpecModulator
+        from Modulators import ContSpecModulator
         normalized_distance = self.normalization.norm_dist(distance)
         normalized_duration = T[1] - T[0]
         required_normalized_dt = normalized_duration/self.n_symbols_per_block/128 # originally it was 8 instead of 128 in denominator
         required_dxi = self._carrier_spacing / 8
-        self._modulator = DDFContSpecModulator(carrier_waveform,
-                                            self._carrier_spacing,
-                                            self.n_symbols_per_block,
-                                            normalized_distance,
-                                            T,
-                                            required_normalized_dt,
-                                            required_dxi,
-                                            "b")
+        self._modulator = ContSpecModulator(carrier_waveform,
+                                               self._carrier_spacing,
+                                               self.n_symbols_per_block,
+                                               normalized_distance*profile['avg_D_z'],
+                                               T,
+                                               required_normalized_dt,
+                                               required_dxi,
+                                               "b")
 
         # Link
 
-        from Links import DDFSplitStep
+        from Links import SMFSplitStep
         dt = self._normalization.denorm_time(self.modulator.normalized_dt)
-        dz = self.fiber_span_length/self.n_steps_per_span
-        self._link = DDFSplitStep(dt, dz, self.n_steps_per_span, self.alpha,
-                                  self.beta2, self.gamma, False, self.n_spans,
+        self._link = SMFSplitStep(dt, dz, self.n_steps_per_span, self.fiber_type,
+                                  self.alpha, self.beta2, self.gamma, False, self.n_spans,
                                   self.post_boost, self.noise, self.noise_figure)
 
         # Filters
