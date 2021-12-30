@@ -41,6 +41,9 @@ class BuelowArefIdler2016(BaseExample):
         self.gamma = 1.6e-3
         """Nonlinearity coefficient in (W m)**(-1)."""
 
+        self.fiber_type = "SSMF"
+        """Fiber type: "DDF" dispersion decreasing fiber or "SSMF" standard single mode fiber."""
+
         self.Tscale = 4.5473e-11
         """Time scale used during normalization in s."""
 
@@ -132,7 +135,7 @@ class BuelowArefIdler2016(BaseExample):
         dt = self.normalization.denorm_time(self.modulator.normalized_dt)
         dz = self.fiber_span_length/self.n_steps_per_span
         nz = self.n_spans*self.n_steps_per_span
-        self._link = SMFSplitStep(dt, dz, self.n_steps_per_span,
+        self._link = SMFSplitStep(dt, dz, self.n_steps_per_span, self.fiber_type,
                                   self.alpha, self.beta2, self.gamma,
                                   False, self.n_spans, self.post_boost,
                                   self.noise, self.noise_figure)

@@ -17,13 +17,13 @@
 # Contributors:
 # Sander Wahls (TU Delft) 2018-2019
 # Marius Brehler (TU Dortmund) 2018-2019
+# Marius Brehler 2019
 
 from Links import BaseLink
 from Links._DDFssprop import _DDFssprop
-from Links._ssprop import _ssprop
-import matplotlib.pyplot as plt
 import numpy as np
 from scipy.constants import Planck
+from Links.DDF_profile import Get_Beta_Gamma_Profile
 
 class DDFSplitStep(BaseLink):
     """Simulates a link with one or several single mode dispersion decreasing fiber spans connected by
@@ -75,7 +75,7 @@ class DDFSplitStep(BaseLink):
         self._dt = dt
         self._dz = dz
         self._nz = nz
-        self._alpha = alpha *np.log(10)*0.05
+        self._alpha = alpha *np.log(10)*0.1
         self._gain = self._dz * self._nz * alpha
         self._beta2 = beta2
         self._gamma = gamma
@@ -90,36 +90,7 @@ class DDFSplitStep(BaseLink):
         self._BETA2 = None
         self._GAMMA = None
         self._D_z = None
-    def _Get_Beta_Gamma_Profile(self):
-        ''' Returns the Beta2 and Gamma profile (vector) ie z dependent values
-        The function reuqires attenuation parameter and intial value of Beta2(0) and GAMMA(0) 
-        and span length as input.'''
-        c = 3e8   # light speed m/s
-        lambda0 = 1.55e-6    # center wavelength
-        kappa = lambda0**2*1e-6/(2*np.pi*c)
-        BETA20 = abs(self._beta2)
-        GAMMA0 = abs(self._gamma)
-        R0 = (BETA20/kappa + 20)/8      # core radius in micro meter
-        n2 = GAMMA0*(lambda0*np.pi*(R0*1e-6)**2)/(2*np.pi)
-        #dz = self._dz
-        #z = np.arange(0,self.n_steps_per_span)*dz    
-        a = BETA20*R0**2
-        Rad_z = np.zeros(self._nz)
-        for i in range(0,self._nz):
-            p = [8*kappa,-20*kappa,0,-a*np.exp(-2*self._alpha*self._dz*i)]
-            Rad_roots = np.roots(p)
-            ### select the one with lowest imaginary part , then use it's real part
-            #Rad_img = abs(Rad_roots.imag)
-            #j = 0
-            #if Rad_imag[j]>=Rad_imag[j+1]:
-            #    j = j+1
-            #if Rad_imag[j]>=Rad_imag[j+2]:    
-            #    j = j+2
-            Rad_z[i] = Rad_roots[0].real
-        self._BETA2 = -kappa*(8*np.array(Rad_z)-20)    
-        self._GAMMA = np.divide((2*np.pi*n2),(lambda0*np.pi*(Rad_z*1e-6)**2))
-        self._D_z = np.divide(self._BETA2,self._BETA2[0])
-        
+
     def _ASE_noise_power(self):
         '''Returns the amplified spontaneous emission (ASE) power using the
         equations 7.2.11 and 7.2.15 in the 4th edition of "Fiber-Optic
@@ -168,15 +139,12 @@ class DDFSplitStep(BaseLink):
 
     def transmit(self, input):
         # Docstring is inherited from base class.
-        self._Get_Beta_Gamma_Profile()
+        profile = Get_Beta_Gamma_Profile(self._alpha, self._beta2, self._gamma, self._dz, self._nz)
+        self._BETA2 = profile['BETA2']
+        self._GAMMA = profile['GAMMA']
+
         if self._n_spans == 1:
-            uu = _DDFssprop(input,
-                         self._dt,
-                         self._dz,
-                         self._nz,
-                         self._alpha,
-                         self._BETA2,
-                         self._GAMMA)
+            uu = _DDFssprop(input, self._dt, self._dz, self._nz, self._alpha, self._BETA2, self._GAMMA)
 
             if self._post_boost == True:
                 if self._alpha.size != 1:
@@ -188,13 +156,8 @@ class DDFSplitStep(BaseLink):
         else:
             uu = input
             for span_i in range(0,self._n_spans):
-                uu = _DDFssprop(uu,
-                             self._dt,
-                             self._dz,
-                             self._nz,
-                             self._alpha,
-                             self._BETA2,
-                             self._GAMMA)
+                uu = _DDFssprop(uu, self._dt, self._dz, self._nz, self._alpha, self._BETA2, self._GAMMA)
+
                 if self._verbose:
                     print("Finished span",span_i+1)
 

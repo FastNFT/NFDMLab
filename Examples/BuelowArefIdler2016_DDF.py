@@ -43,6 +43,9 @@ class BuelowArefIdler2016_DDF(BaseExample):
         self.gamma = 1.36e-3
         """Nonlinearity coefficient in (W m)**(-1)."""
 
+        self.fiber_type = "DDF"
+        """Fiber type: "DDF" dispersion decreasing fiber or "SSMF" standard single mode fiber."""
+
         self.Tscale = 4.1022e-11
 
         """Time scale used during normalization in s."""
@@ -54,17 +57,16 @@ class BuelowArefIdler2016_DDF(BaseExample):
         """Number of fiber spans."""
 
         self.n_steps_per_span = 500
-        """Number of spatial steps per fiber span during simulations."""
+        """Number of spatial steps per fiber span during simulations. Use more than 2 steps per km length for the transmission over the DDF for better accuracy."""
 
-        self.fiber_span_length = 80e3 #If you change it, then change the average dispersion in the demodulator
+        self.fiber_span_length = 80e3 #If you change it, then change the average dispersion (D_z) in the demodulator
         """Length of a fiber span in m."""
 
         self.post_boost = True
         """Boost at end of each span (lumped amplification). True or False."""
 
         self.path_average = False
-        """Use path-average fiber parameters during normalization. True or
-        False."""
+        """Use path-average fiber parameters during normalization. True or False. False for the transmission over DDF."""
 
         self.noise = False
         """Add ASE noise (lumped amplification only). True or False."""
@@ -122,23 +124,28 @@ class BuelowArefIdler2016_DDF(BaseExample):
         assert self.constellation_level == m*m
         self._constellation = QAMConstellation(m, m)
 
+        from Links.DDF_profile import Get_Beta_Gamma_Profile
+        dz = self.fiber_span_length/self.n_steps_per_span
+        nz = self.n_spans*self.n_steps_per_span
+        profile = Get_Beta_Gamma_Profile(self.alpha * np.log(10) * 0.1, self.beta2, self.gamma, dz,
+                                         self.n_steps_per_span)
+
         # Modulator
 
-        from Modulators import DDFDiscSpecModulator
+        from Modulators import DiscSpecModulator
         normalized_distance = self.normalization.norm_dist(distance)
         required_normalized_dt = (T[1] - T[0])/512
-        self._modulator = DDFDiscSpecModulator(self.eigenvalues,
+        self._modulator = DiscSpecModulator(self.eigenvalues,
                                             self.residues_amplitude,
-                                            normalized_distance,
+                                            normalized_distance*profile['avg_D_z'],
                                             T, required_normalized_dt)
 
         # Link
 
-        from Links import DDFSplitStep                                # Propagation in Dispersion Decreasing Fiber
+        from Links import SMFSplitStep                                # Propagation in Dispersion Decreasing Fiber
         dt = self.normalization.denorm_time(self.modulator.normalized_dt)
-        dz = self.fiber_span_length/self.n_steps_per_span
-        nz = self.n_spans*self.n_steps_per_span        
-        self._link = DDFSplitStep(dt, dz, self.n_steps_per_span,
+
+        self._link = SMFSplitStep(dt, dz, self.n_steps_per_span, self.fiber_type,
                                   self.alpha, self.beta2, self.gamma,
                                   False, self.n_spans, self.post_boost,
                                   self.noise, self.noise_figure)

@@ -3,7 +3,7 @@ import sys
 import numpy as np
 import scipy.io as scio
 
-Fiber_type = 'DDF'  # 'DDF' or 'CDF'
+Fiber_type = 'DDF'  # 'DDF' or 'SSMF'
 
 if Fiber_type == 'DDF':
     example = Examples.GuiEtAl2018_DDF()   
@@ -11,7 +11,7 @@ if Fiber_type == 'DDF':
     example.path_average = False
     example.beta2 = -25.491e-27
     example.gamma = 1.3e-3
-elif Fiber_type == 'CDF':
+elif Fiber_type == 'SSMF':
     example = Examples.GuiEtAl2018()
     example.n_steps_per_span = 200
     Factor_gamma_eff_80km = 0.2646
