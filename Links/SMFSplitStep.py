@@ -21,6 +21,8 @@
 
 from Links import BaseLink
 from Links._ssprop import _ssprop
+from Links._DDFssprop import _DDFssprop
+from Links.DDF_profile import Get_Beta_Gamma_Profile
 
 import numpy as np
 from scipy.constants import Planck
@@ -33,7 +35,7 @@ class SMFSplitStep(BaseLink):
     polarization to the ASE noise are not included.
     """
 
-    def __init__(self, dt, dz, nz,
+    def __init__(self, dt, dz, nz, fiber_type='SMF',
                  alpha=0.0, beta2=1.0, gamma=-1.0,
                  verbose=False, n_spans=1,
                  post_boost=False, noise=False, noise_figure=3,
@@ -91,6 +93,11 @@ class SMFSplitStep(BaseLink):
         self._center_frequency = center_frequency
         self._span_length = nz*dz
         self._n_spans = n_spans
+        self._fiber_type = fiber_type
+        if fiber_type == 'DDF':
+            self._BETA2 = None
+            self._GAMMA = None
+            self._D_z = None
 
     def _ASE_noise_power(self):
         '''Returns the amplified spontaneous emission (ASE) power using the
@@ -141,15 +148,18 @@ class SMFSplitStep(BaseLink):
 
     def transmit(self, input):
         # Docstring is inherited from base class.
+        if self._fiber_type == 'DDF':
+            profile = Get_Beta_Gamma_Profile(self._alpha, self._beta2, self._gamma, self._dz, self._nz)
+            self._BETA2 = profile['BETA2']
+            self._GAMMA = profile['GAMMA']
+            simulate_fiber_prop = _DDFssprop
+            disp_nl_profile = (self._BETA2, self._GAMMA)
+        else:
+            simulate_fiber_prop = _ssprop
+            disp_nl_profile = ([0., 0., -self._beta2], -self._gamma)
 
         if self._n_spans == 1:
-            uu = _ssprop(input,
-                         self._dt,
-                         self._dz,
-                         self._nz,
-                         self._alpha,
-                         [0., 0., -self._beta2],
-                         -self._gamma)
+            uu = simulate_fiber_prop(input, self._dt, self._dz, self._nz, self._alpha, disp_nl_profile[0], disp_nl_profile[1])
 
             if self._post_boost == True:
                 if self._alpha.size != 1:
@@ -161,13 +171,8 @@ class SMFSplitStep(BaseLink):
         else:
             uu = input
             for span_i in range(0,self._n_spans):
-                uu = _ssprop(uu,
-                             self._dt,
-                             self._dz,
-                             self._nz,
-                             self._alpha,
-                             [0., 0., -self._beta2],
-                             -self._gamma)
+                uu = simulate_fiber_prop(uu, self._dt, self._dz, self._nz, self._alpha, disp_nl_profile[0], disp_nl_profile[1] )
+
                 if self._verbose:
                     print("Finished span",span_i+1)
 
