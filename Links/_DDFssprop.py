@@ -80,7 +80,7 @@ def _DDFssprop(u0,dt,dz,nz,alpha,D,R):
     nt = np.size(u0)
     assert nt%2 == 0
     w = 2*np.pi*np.hstack((np.arange(0, nt/2), np.arange(-nt/2, 0)))/(dt*nt)
-   
+    field_attenuation = alpha/2
     u1 = u0    
     for iz in range(0, nz):
         beta  = D[iz]   # get beta_2 value at that location
@@ -90,5 +90,5 @@ def _DDFssprop(u0,dt,dz,nz,alpha,D,R):
         uhalf = np.fft.ifft(halfstep*np.fft.fft(u1)) 
         uv = uhalf*np.exp(1j*gamma*(np.abs(u1)**2*dz))
         uv = np.fft.ifft(halfstep*np.fft.fft(uv))
-        u1 = uv*np.exp(-alpha*dz)
+        u1 = uv*np.exp(-field_attenuation*dz)
     return u1
