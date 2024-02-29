@@ -17,6 +17,8 @@
 # Contributors:
 # Sander Wahls (TU Delft) 2018-2019
 # Shrinivas Chimmalgi (TU Delft) 2018
+# Vinod Bajaj (TU Delft) 2019, 2021
+# Sander Wahls (KIT) 2024
 
 import numpy as np
 import math
@@ -41,11 +43,12 @@ class GuiEtAl2018(BaseExample):
         """Nonlinearity parameter in (W m)**(-1)."""
 
         self.fiber_type = "SSMF"
-        """Fiber type: "DDF" dispersion decreasing fiber or "SSMF" standard single mode fiber."""
+        """Fiber type: "DDF" for dispersion decreasing fiber or for "SSMF" standard single mode fiber."""
+
         self.Tscale = 1.25e-9 # s
         """Time scale used during normalization in s."""
 
-        self.alpha = np.array([0.2e-3])
+        self.alpha = 0.2e-3
         """Loss coefficient in 1/m."""
 
         self.post_boost = True

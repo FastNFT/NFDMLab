@@ -17,6 +17,8 @@
 # Contributors:
 # Sander Wahls (TU Delft) 2018-2019
 # Shrinivas Chimmalgi (TU Delft) 2018
+# Vinod Bajaj (TU Delft) 2021
+# Sander Wahls (KIT) 2024
 
 import numpy as np
 import math
@@ -47,7 +49,7 @@ class BuelowArefIdler2016(BaseExample):
         self.Tscale = 4.5473e-11
         """Time scale used during normalization in s."""
 
-        self.alpha = np.array([0.2e-3])
+        self.alpha = 0.2e-3
         """Loss coefficient in 1/m."""
 
         self.n_spans = 20

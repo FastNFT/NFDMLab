@@ -1,5 +1,3 @@
-
-
 # This file is part of NFDMLab.
 #
 # NFDMLab is free software; you can redistribute it and/or
@@ -17,22 +15,25 @@
 # 02111-1307 USA
 #
 # Contributors:
+# Vinod Bajaj (TU Delft) 2019, 2021
 # Sander Wahls (TU Delft) 2018-2019
 # Shrinivas Chimmalgi (TU Delft) 2018
+# Sander Wahls (KIT), 2024
+
 import numpy as np
 import math
 
 from Examples import BaseExample
 
-class BuelowArefIdler2016_DDF(BaseExample):
-    '''This example loosely recreates the experiment presented in the paper
+class BajajEtAl2020_multi_soliton(BaseExample):
+    '''This example recreates the multi-soliton transmission in dispersion-decreasing
+    fiber from the paper
 
-    "Transmission of Waveforms Determined by 7 Eigenvalues with PSK-Modulated
-    Spectral Amplitudes" by H. Buelow, V. Aref and W. Idler
+    "Exact NFDM Transmission in the Presence of Fiber-Loss" by V. Bajaj,
+    S. Chimmalgi, V. Aref, and S. Wahls,
 
-    presented at the 42nd European Conference on Optical Communication
-    (ECOC 2016).
-    The transmission fiber is a dispersion decreasing fiber.'''
+    published in the Journal of Lightwave Technology 38(11), 2020.'''
+
 
     def __init__(self):
         # Fiber parameters        
@@ -44,13 +45,13 @@ class BuelowArefIdler2016_DDF(BaseExample):
         """Nonlinearity coefficient in (W m)**(-1)."""
 
         self.fiber_type = "DDF"
-        """Fiber type: "DDF" dispersion decreasing fiber or "SSMF" standard single mode fiber."""
+        """Fiber type: "DDF" dispersion for decreasing fiber or "SSMF" for standard single mode fiber."""
 
         self.Tscale = 4.1022e-11
 
         """Time scale used during normalization in s."""
 
-        self.alpha = np.array([0.2e-3])
+        self.alpha = 0.2e-3
         """Loss coefficient in 1/m."""
 
         self.n_spans = 8

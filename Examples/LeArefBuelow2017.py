@@ -18,6 +18,7 @@
 # Sander Wahls (TU Delft) 2018-2019
 # Christoph Mahnke 2018
 # Marius Brehler (TU Dortmund) 2019
+# Sander Wahls (KIT) 2024
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -47,7 +48,7 @@ class LeArefBuelow2017(BaseExample):
 
         # Link parameters
 
-        self.alpha = np.array([0.2e-3])
+        self.alpha = 0.2e-3
         """Loss coefficient in 1/m."""
 
         self.beta2 = -5.75e-27
@@ -57,7 +58,8 @@ class LeArefBuelow2017(BaseExample):
         """Nonlinearity coefficient in (W m)**(-1)."""
 
         self.fiber_type = "SSMF"
-        """Fiber type: "DDF" dispersion decreasing fiber or "SSMF" standard single mode fiber."""
+        """Fiber type: "DDF" for dispersion decreasing fiber or "SSMF" for standard single mode fiber."""
+
         self.Tscale = 4e-10
         """Time scale used during normalization in s."""
 

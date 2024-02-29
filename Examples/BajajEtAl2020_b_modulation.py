@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr 30 17:13:41 2019
-
-@author: vinodbajaj
-"""
-
 # This file is part of NFDMLab.
 #
 # NFDMLab is free software; you can redistribute it and/or
@@ -22,21 +15,24 @@ Created on Tue Apr 30 17:13:41 2019
 # 02111-1307 USA
 #
 # Contributors:
+# Vinod Bajaj (TU Delft) 2019, 2021
 # Sander Wahls (TU Delft) 2018-2019
 # Shrinivas Chimmalgi (TU Delft) 2018
+# Sander Wahls (KIT), 2024
 
 import numpy as np
 import math
 
 from Examples import BaseExample
 
-class GuiEtAl2018_DDF(BaseExample):
-    '''This example loosely recreates the experiment presented in the paper
+class BajajEtAl2020_b_modulation(BaseExample):
+    '''This example recreates the b-modulation transmission in dispersion-decreasing
+    fiber from the paper
 
-    "Nonlinear frequency division multiplexing with b-modulation: shifting the
-    energy barrier " by T. Gui, G. Zhou, C. Lu, A.P.T. Lau, and S. Wahls
+    "Exact NFDM Transmission in the Presence of Fiber-Loss" by V. Bajaj,
+    S. Chimmalgi, V. Aref, and S. Wahls,
 
-    published in Optics Express 26(21), 2018.'''
+    published in the Journal of Lightwave Technology 38(11), 2020.'''
 
     def __init__(self):
         # Fiber parameters
@@ -48,11 +44,12 @@ class GuiEtAl2018_DDF(BaseExample):
         """Nonlinearity parameter in (W m)**(-1)."""
 
         self.fiber_type = "DDF"
-        """Fiber type: "DDF" dispersion decreasing fiber or "SSMF" standard single mode fiber."""
+        """Fiber type: "DDF" for dispersion decreasing fiber or "SSMF" for standard single mode fiber."""
+
         self.Tscale = 1.25e-9 # s
         """Time scale used during normalization in s."""
 
-        self.alpha = np.array([0.2e-3])
+        self.alpha = 0.2e-3
         """Loss coefficient in 1/m."""
 
         self.post_boost = True

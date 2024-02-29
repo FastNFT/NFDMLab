@@ -6,7 +6,7 @@ import scipy.io as scio
 Fiber_type = 'DDF'  # 'DDF' or 'SSMF'
 
 if Fiber_type == 'DDF':
-    example = Examples.GuiEtAl2018_DDF()   
+    example = Examples.BajajEtAl2020_b_modulation()   
     example.n_steps_per_span = 500   
     example.path_average = False
     example.beta2 = -25.491e-27
