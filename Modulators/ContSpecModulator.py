@@ -281,11 +281,10 @@ class ContSpecModulator(BaseModulator):
                 symbols[n] /= scl
             
         else:
-            for n in range(0, self.n_symbols_per_block):
-                symbols[n] = nfspec.cont[self._carrier_center_idx[n]]
-                print('carrier centers',self._carrier_center_idx[n])
+            symbols = self._sum_shifted_carriers.extract_symbols(nfspec.cont)
+            for n in range(0, np.size(symbols)):
                 if self._use_power_normalization_map:
                     symbols[n] = np.sqrt(np.log(np.abs(symbols[n])**2 + 1.0)) * np.exp(1j*np.angle(symbols[n]))
-                symbols[n] /= scl
+                symbols[n] /= self._power_control_factor
 
         return symbols, nfspec
