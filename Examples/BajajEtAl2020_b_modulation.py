@@ -15,35 +15,36 @@
 # 02111-1307 USA
 #
 # Contributors:
+# Vinod Bajaj (TU Delft) 2019, 2021
 # Sander Wahls (TU Delft) 2018-2019
 # Shrinivas Chimmalgi (TU Delft) 2018
-# Vinod Bajaj (TU Delft) 2019, 2021
-# Sander Wahls (KIT) 2024
+# Sander Wahls (KIT), 2024
 
 import numpy as np
 import math
 
 from Examples import BaseExample
 
-class GuiEtAl2018(BaseExample):
-    '''This example loosely recreates the experiment presented in the paper
+class BajajEtAl2020_b_modulation(BaseExample):
+    '''This example recreates the b-modulation transmission in dispersion-decreasing
+    fiber from the paper
 
-    "Nonlinear frequency division multiplexing with b-modulation: shifting the
-    energy barrier " by T. Gui, G. Zhou, C. Lu, A.P.T. Lau, and S. Wahls
+    "Exact NFDM Transmission in the Presence of Fiber-Loss" by V. Bajaj,
+    S. Chimmalgi, V. Aref, and S. Wahls,
 
-    published in Optics Express 26(21), 2018.'''
+    published in the Journal of Lightwave Technology 38(11), 2020.'''
 
     def __init__(self):
         # Fiber parameters
 
-        self.beta2 = -5e-27
+        self.beta2 = -25.491e-27
         """Dispersion parameter in s**2/m."""
 
-        self.gamma = 1.2e-3
+        self.gamma = 1.3e-3
         """Nonlinearity parameter in (W m)**(-1)."""
 
-        self.fiber_type = "SSMF"
-        """Fiber type: "DDF" for dispersion decreasing fiber or for "SSMF" standard single mode fiber."""
+        self.fiber_type = "DDF"
+        """Fiber type: "DDF" for dispersion decreasing fiber or "SSMF" for standard single mode fiber."""
 
         self.Tscale = 1.25e-9 # s
         """Time scale used during normalization in s."""
@@ -55,7 +56,7 @@ class GuiEtAl2018(BaseExample):
         """Boost at the end of each span (lumped amplification). True or
         False."""
 
-        self.path_average = True
+        self.path_average = False
         """Use path-averaged fiber parameters during normalization. True or
         False."""
 
@@ -68,15 +69,16 @@ class GuiEtAl2018(BaseExample):
 
         self.n_spans = 8
         """Number of fiber spans."""
+        
         self.fiber_span_length = 80e3
         """Length of a fiber span in m."""
 
-        self.n_steps_per_span = 40
+        self.n_steps_per_span = 500
         """Number of spatial steps per span during the numerical simulation of
         the fiber transmission."""
 
         # Modulator parameters
-        self.constellation_type = 'QAM'
+        self.constellation_type = 'PSK'
         """We support 'QAM' and 'PSK'."""
 
         self.constellation_level = 16
@@ -98,11 +100,6 @@ class GuiEtAl2018(BaseExample):
         self.rx_bandwidth = 33e9 # in GHz
         """Bandwidth of the (ideal) low-pass filter at the receiver in Hz."""
 
-        self.dX_factor = 8
-        """Factor used when determining the time domain step size dt and the
-        nonlinear frequency domain step size dxi. Both are proportional to
-        1/dX_factor."""
-
         self.reconfigure()
 
     def reconfigure(self):
@@ -111,7 +108,7 @@ class GuiEtAl2018(BaseExample):
         carrier_waveform = lambda xi : flat_top(xi, T0)
         self._carrier_spacing = 15.0
         T0 = 4.5
-        T = np.array([-1.0, 1.0])
+        T = np.array([-2.25, 2.25])   # changed from -1 1
 
         # Normalization
 
@@ -140,27 +137,35 @@ class GuiEtAl2018(BaseExample):
         else:
             raise Exception('Constellation not supported')
 
+
+        from Links.DDF_profile import Get_Beta_Gamma_Profile
+        dz = self.fiber_span_length/self.n_steps_per_span
+        profile = Get_Beta_Gamma_Profile(self.alpha * np.log(10) * 0.1, self.beta2, self.gamma, dz,
+                                         self.n_steps_per_span)
+
+
+
         # Modulator
 
         from Modulators import ContSpecModulator
         normalized_distance = self.normalization.norm_dist(distance)
         normalized_duration = T[1] - T[0]
-        required_normalized_dt = normalized_duration/self.n_symbols_per_block/self.dX_factor
-        required_dxi = self._carrier_spacing / self.dX_factor
+        required_normalized_dt = normalized_duration/self.n_symbols_per_block/128 # originally it was 8 instead of 128 in denominator
+        required_dxi = self._carrier_spacing / 8
         self._modulator = ContSpecModulator(carrier_waveform,
-                                            self._carrier_spacing,
-                                            self.n_symbols_per_block,
-                                            normalized_distance,
-                                            T,
-                                            required_normalized_dt,
-                                            required_dxi,
-                                            "b")
+                                               self._carrier_spacing,
+                                               self.n_symbols_per_block,
+                                               normalized_distance*profile['avg_D_z'],
+                                               T,
+                                               required_normalized_dt,
+                                               required_dxi,
+                                               "b",
+                                                matched_filter_percentage=70)
 
         # Link
 
         from Links import SMFSplitStep
         dt = self._normalization.denorm_time(self.modulator.normalized_dt)
-        dz = self.fiber_span_length/self.n_steps_per_span
         self._link = SMFSplitStep(dt, dz, self.n_steps_per_span, self.fiber_type,
                                   self.alpha, self.beta2, self.gamma, False, self.n_spans,
                                   self.post_boost, self.noise, self.noise_figure)

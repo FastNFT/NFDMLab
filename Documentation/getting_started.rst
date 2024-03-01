@@ -11,7 +11,7 @@ Users can create a instance of an existing example class in order to perform sim
 .. code-block:: python
 
   import Examples
-  ex = Example.BuelowArefIdler2016()
+  ex = Examples.BuelowArefIdler2016()
 
 A list of existing examples is provided under :doc:`examples`.
 

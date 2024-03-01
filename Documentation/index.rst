@@ -11,6 +11,8 @@ paper:
    <https://doi.org/10.1364/OFC.2019.M3Z.13>`_ Optical Networking and
    Communication Conference & Exhibition (OFC), paper M3Z.13, Mar. 2019.
 
+Please consider citing this paper if NFDMLab contributes to your research.
+
 First Steps
 -----------
 
@@ -37,6 +39,7 @@ Acknowledgements
 ----------------
 
 - This project has received funding from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation programme (grant agreement No 716669).
+- This project has received funding from the European Union’s Horizon 2020 research and innovation programme under the Marie Skłodowska-Curie grant agreement No 766115.
 - Fiber-topic transmissions are simulated using a slightly modified port of `SSPROP <https://www.photonics.umd.edu/software/ssprop/>`_.
 - Alexander Geisler has contributed a Raman gain profile.
 

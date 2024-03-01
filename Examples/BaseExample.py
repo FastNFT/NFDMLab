@@ -270,6 +270,8 @@ class BaseExample(ABC):
         rx_data["nfspecs"][0].show(legend=["tx", "rx"])
 
         constellation_diagram = ConstellationDiagram(self.constellation)
+        # scaling the Rx symbols, to the rms power of Tx symbols, This will isolate the effect of scaling from EVM computation
+        rx_data["symbols"] = np.sqrt(np.mean(np.abs(tx_data["symbols"])**2))*rx_data["symbols"]/np.sqrt(np.mean(np.abs(rx_data["symbols"])**2))
         constellation_diagram.plot(rx_data["symbols"], new_fig=True)
 
         error_vector_magnitude = ErrorVectorMagnitude()
@@ -282,7 +284,7 @@ class BaseExample(ABC):
         eff, br, bw_rx = modulation_efficiency.compute(rx_data["t"], rx_data["q"], rx_data["q"], nerr, nbits)
         _, _, bw_tx = modulation_efficiency.compute(tx_data["t"], tx_data["q"], tx_data["q"], 0, 1)
 
-        tx_power_level = np.mean(np.abs(rx_data["q"])**2)
+        tx_power_level = np.mean(np.abs(tx_data["q"])**2)
         tx_power_level_in_dBm = 10*np.log10(tx_power_level / 0.001)
 
         link_length = self.link.span_length * self.link.n_spans

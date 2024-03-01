@@ -16,8 +16,13 @@
 #
 # Contributors:
 # Sander Wahls (TU Delft) 2019
+# Vinod Bajaj (TU Delft) 2019
+# Sander Wahls (KIT) 2024
 
 from Examples.BaseExample import BaseExample
 from Examples.BuelowArefIdler2016 import BuelowArefIdler2016
 from Examples.LeArefBuelow2017 import LeArefBuelow2017
 from Examples.GuiEtAl2018 import GuiEtAl2018
+from Examples.BajajEtAl2020_multi_soliton import BajajEtAl2020_multi_soliton
+from Examples.BajajEtAl2020_b_modulation import BajajEtAl2020_b_modulation
+from Examples.TimeDomainPulseShaping import TimeDomainPulseShaping

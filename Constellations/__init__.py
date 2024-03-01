@@ -21,3 +21,4 @@ from Constellations.BaseConstellation import BaseConstellation
 from Constellations.QAMConstellation import QAMConstellation
 from Constellations.MPSKConstellation import MPSKConstellation
 from Constellations.ReshapedQAMConstellation import ReshapedQAMConstellation
+from Constellations.ReshapedPSKConstellation import ReshapedPSKConstellation
