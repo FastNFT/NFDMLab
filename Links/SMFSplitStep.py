@@ -108,6 +108,11 @@ class SMFSplitStep(BaseLink):
         if self._noise == False:
             return 0.0
         G = 10**(self._gain/10.0)
+        if isinstance(self._gain, np.ndarray):
+            assert(len(self._gain) == 1) # no individual loss coeffients per
+                                         # span allowed with noise enabled
+                                         # at the moment
+            G = G[0]
         Fn = 10**(self._noise_figure/10.0)
         n_sp = (G*Fn - 1.0)/2.0/(G - 1.0)
         return np.max([0, n_sp * Planck * self._center_frequency * (G - 1)])

@@ -31,7 +31,7 @@ class BaseModulator(ABC):
 
     During construction, any modulator class should set the attributes
 
-    - _norm_dt
+    - _normalized_dt
     - _n_samples
     - _n_symbols_per_block
 

@@ -159,7 +159,8 @@ class BajajEtAl2020_b_modulation(BaseExample):
                                                T,
                                                required_normalized_dt,
                                                required_dxi,
-                                               "b")
+                                               "b",
+                                                matched_filter_percentage=70)
 
         # Link
 

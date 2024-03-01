@@ -25,3 +25,4 @@ from Examples.LeArefBuelow2017 import LeArefBuelow2017
 from Examples.GuiEtAl2018 import GuiEtAl2018
 from Examples.BajajEtAl2020_multi_soliton import BajajEtAl2020_multi_soliton
 from Examples.BajajEtAl2020_b_modulation import BajajEtAl2020_b_modulation
+from Examples.TimeDomainPulseShaping import TimeDomainPulseShaping

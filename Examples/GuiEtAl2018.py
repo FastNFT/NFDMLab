@@ -98,6 +98,11 @@ class GuiEtAl2018(BaseExample):
         self.rx_bandwidth = 33e9 # in GHz
         """Bandwidth of the (ideal) low-pass filter at the receiver in Hz."""
 
+        self.dX_factor = 8
+        """Factor used when determining the time domain step size dt and the
+        nonlinear frequency domain step size dxi. Both are proportional to
+        1/dX_factor."""
+
         self.reconfigure()
 
     def reconfigure(self):
@@ -140,8 +145,8 @@ class GuiEtAl2018(BaseExample):
         from Modulators import ContSpecModulator
         normalized_distance = self.normalization.norm_dist(distance)
         normalized_duration = T[1] - T[0]
-        required_normalized_dt = normalized_duration/self.n_symbols_per_block/8
-        required_dxi = self._carrier_spacing / 8
+        required_normalized_dt = normalized_duration/self.n_symbols_per_block/self.dX_factor
+        required_dxi = self._carrier_spacing / self.dX_factor
         self._modulator = ContSpecModulator(carrier_waveform,
                                             self._carrier_spacing,
                                             self.n_symbols_per_block,

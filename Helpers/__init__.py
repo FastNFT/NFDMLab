@@ -18,6 +18,7 @@
 # Sander Wahls (TU Delft) 2019
 
 from Helpers.NFSpectrum import NFSpectrum
+from Helpers.SumOfShiftedWaveforms import SumOfShiftedWaveforms
 
 def checked_get(obj, attr_name, base_class):
     """Auxiliary function that checks whether the object obj has set an

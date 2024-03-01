@@ -18,3 +18,6 @@ Examples
 
 .. autoclass:: Examples.BajajEtAl2020_multi_soliton
     :members:
+
+.. autoclass:: Examples.TimeDomainPulseShaping
+    :members:
