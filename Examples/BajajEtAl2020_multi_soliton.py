@@ -15,63 +15,64 @@
 # 02111-1307 USA
 #
 # Contributors:
+# Vinod Bajaj (TU Delft) 2019, 2021
 # Sander Wahls (TU Delft) 2018-2019
 # Shrinivas Chimmalgi (TU Delft) 2018
-# Vinod Bajaj (TU Delft) 2021
-# Sander Wahls (KIT) 2024
+# Sander Wahls (KIT), 2024
 
 import numpy as np
 import math
 
 from Examples import BaseExample
 
-class BuelowArefIdler2016(BaseExample):
-    '''This example loosely recreates the experiment presented in the paper
+class BajajEtAl2020_multi_soliton(BaseExample):
+    '''This example recreates the multi-soliton transmission in dispersion-decreasing
+    fiber from the paper
 
-    "Transmission of Waveforms Determined by 7 Eigenvalues with PSK-Modulated
-    Spectral Amplitudes" by H. Buelow, V. Aref and W. Idler
+    "Exact NFDM Transmission in the Presence of Fiber-Loss" by V. Bajaj,
+    S. Chimmalgi, V. Aref, and S. Wahls,
 
-    presented at the 42nd European Conference on Optical Communication
-    (ECOC 2016).'''
+    published in the Journal of Lightwave Technology 38(11), 2020.'''
+
 
     def __init__(self):
-        # Fiber parameters
+        # Fiber parameters        
 
-        self.beta2 = -5.75e-27
+        self.beta2 =-25.491e-27       
         """Dispersion coefficient in s**2/m."""
 
-        self.gamma = 1.6e-3
+        self.gamma = 1.36e-3
         """Nonlinearity coefficient in (W m)**(-1)."""
 
-        self.fiber_type = "SSMF"
-        """Fiber type: "DDF" dispersion decreasing fiber or "SSMF" standard single mode fiber."""
+        self.fiber_type = "DDF"
+        """Fiber type: "DDF" dispersion for decreasing fiber or "SSMF" for standard single mode fiber."""
 
-        self.Tscale = 4.5473e-11
+        self.Tscale = 4.1022e-11
+
         """Time scale used during normalization in s."""
 
         self.alpha = 0.2e-3
         """Loss coefficient in 1/m."""
 
-        self.n_spans = 20
+        self.n_spans = 8
         """Number of fiber spans."""
 
-        self.n_steps_per_span = 40
-        """Number of spatial steps per fiber span during simulations."""
+        self.n_steps_per_span = 500
+        """Number of spatial steps per fiber span during simulations. Use more than 2 steps per km length for the transmission over the DDF for better accuracy."""
 
-        self.fiber_span_length = 72e3
+        self.fiber_span_length = 80e3 #If you change it, then change the average dispersion (D_z) in the demodulator
         """Length of a fiber span in m."""
 
         self.post_boost = True
         """Boost at end of each span (lumped amplification). True or False."""
 
-        self.path_average = True
-        """Use path-average fiber parameters during normalization. True or
-        False."""
+        self.path_average = False
+        """Use path-average fiber parameters during normalization. True or False. False for the transmission over DDF."""
 
-        self.noise = True
+        self.noise = False
         """Add ASE noise (lumped amplification only). True or False."""
 
-        self.noise_figure = 3
+        self.noise_figure = 6
         """Noise figure in dB."""
 
         # Receiver bandwidth
@@ -95,12 +96,14 @@ class BuelowArefIdler2016(BaseExample):
         multiplied with symbols drawn from the constellation before pulse
         generation). """
 
+
         self.reconfigure()
 
     def reconfigure(self):
         distance = self.n_spans*self.fiber_span_length #m
         assert(np.size(self.eigenvalues) == np.size(self.residues_amplitude))
-        T = np.array([-7*np.pi, 7*np.pi])
+        T = np.array([-9*np.pi, 9*np.pi])
+
 
         # Normalization
 
@@ -114,12 +117,19 @@ class BuelowArefIdler2016(BaseExample):
             from Normalization import Lossless
             self._normalization = Lossless(self.beta2, self.gamma, self.Tscale)
 
+
         # Constellation
 
         from Constellations import QAMConstellation
         m = int(math.sqrt(self.constellation_level))
         assert self.constellation_level == m*m
         self._constellation = QAMConstellation(m, m)
+
+        from Links.DDF_profile import Get_Beta_Gamma_Profile
+        dz = self.fiber_span_length/self.n_steps_per_span
+        nz = self.n_spans*self.n_steps_per_span
+        profile = Get_Beta_Gamma_Profile(self.alpha * np.log(10) * 0.1, self.beta2, self.gamma, dz,
+                                         self.n_steps_per_span)
 
         # Modulator
 
@@ -128,15 +138,14 @@ class BuelowArefIdler2016(BaseExample):
         required_normalized_dt = (T[1] - T[0])/512
         self._modulator = DiscSpecModulator(self.eigenvalues,
                                             self.residues_amplitude,
-                                            normalized_distance,
+                                            normalized_distance*profile['avg_D_z'],
                                             T, required_normalized_dt)
 
         # Link
 
-        from Links import SMFSplitStep
+        from Links import SMFSplitStep                                # Propagation in Dispersion Decreasing Fiber
         dt = self.normalization.denorm_time(self.modulator.normalized_dt)
-        dz = self.fiber_span_length/self.n_steps_per_span
-        nz = self.n_spans*self.n_steps_per_span
+
         self._link = SMFSplitStep(dt, dz, self.n_steps_per_span, self.fiber_type,
                                   self.alpha, self.beta2, self.gamma,
                                   False, self.n_spans, self.post_boost,

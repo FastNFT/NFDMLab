@@ -44,7 +44,8 @@ class ContSpecModulator(BaseModulator):
                  contspec_type,
                  percent_precompensation = 0.0,
                  power_control_factor = 1.0,
-                 use_power_normalization_map = False):
+                 use_power_normalization_map = False,
+                 matched_filter_percentage = 0):
         """Constructor.
 
         Parameters
@@ -87,6 +88,13 @@ class ContSpecModulator(BaseModulator):
             in Yangzhang et. al (Proc. OFC'17) to the nonlinear Fourier spectrum
             it has generated before passing it on to the inverse NFT. Currently
             only implemented for reflection coefficients (contspec_type="b/a").
+        matched_filter_percentage : float
+            A number between 0 and 100. If >0, the modulator does not only use
+            b(xi) with xi being the center of the carrier of interest to retrieve
+            the corresponding symbol, but always considers
+            matched_filter_percentage percent of the neighboring frequencies in
+            a matched filter fashion. If matched_filter_percentage==0 (default),
+            only the center frequency is considered.
         """
 
         # Save some given parameters for later use.
@@ -100,6 +108,7 @@ class ContSpecModulator(BaseModulator):
         self._percent_precompensation = percent_precompensation
         self._power_control_factor = power_control_factor
         self._use_power_normalization_map = use_power_normalization_map
+        self._matched_filter_percentage = matched_filter_percentage
 
         # Choose number of time domain samples such that the user requirements
         # on the time step are fulfilled.
@@ -254,10 +263,28 @@ class ContSpecModulator(BaseModulator):
 
         # Recover the symbols
 
-        symbols = self._sum_shifted_carriers.extract_symbols(nfspec.cont)
-        for n in range(0, np.size(symbols)):
-            if self._use_power_normalization_map:
-                symbols[n] = np.sqrt(np.log(np.abs(symbols[n])**2 + 1.0)) * np.exp(1j*np.angle(symbols[n]))
-            symbols[n] /= self._power_control_factor
+        symbols = np.zeros(self.n_symbols_per_block, dtype=complex)
+        scl = np.abs(self._carrier_waveform_fun(0.0)) * self._power_control_factor
+        if self._matched_filter_percentage>0:
+            percentage_averaging = self._matched_filter_percentage # % of carrier spacing. It specifies range of 'xi' to average for symbol detection
+            xi_avg_range = 0.5*self._carrier_spacing*percentage_averaging/100 # xi range for averaging
+            idx_diff = int(xi_avg_range/self._dxi)         # get the index difference 
+            carrier_shape_filter = self._carrier_waveform_fun(xi[int(self._M/2)-idx_diff:int(self._M/2)+idx_diff])# get carrier shape for the filter
+            carrier_center_idx = self._sum_shifted_carriers._center_idx
+            for n in range(0, self.n_symbols_per_block):
+                idx_l = carrier_center_idx[n] - idx_diff # lower index of the xi average range; 
+                idx_u = carrier_center_idx[n] + idx_diff # upper index of the xi average range;                 
+                matched_filtered_data = np.multiply(nfspec.cont[idx_l:idx_u],carrier_shape_filter)
+                symbols[n] = np.mean(matched_filtered_data)/np.mean(carrier_shape_filter)
+                if self._use_power_normalization_map:
+                    symbols[n] = np.sqrt(np.log(np.abs(symbols[n])**2 + 1.0)) * np.exp(1j*np.angle(symbols[n]))
+                symbols[n] /= scl
+            
+        else:
+            symbols = self._sum_shifted_carriers.extract_symbols(nfspec.cont)
+            for n in range(0, np.size(symbols)):
+                if self._use_power_normalization_map:
+                    symbols[n] = np.sqrt(np.log(np.abs(symbols[n])**2 + 1.0)) * np.exp(1j*np.angle(symbols[n]))
+                symbols[n] /= self._power_control_factor
 
         return symbols, nfspec

@@ -20,22 +20,16 @@
 # Marius Brehler 2019
 
 from Links import BaseLink
-from Links._ssprop import _ssprop
 from Links._DDFssprop import _DDFssprop
-from Links.DDF_profile import Get_Beta_Gamma_Profile
-
 import numpy as np
 from scipy.constants import Planck
+from Links.DDF_profile import Get_Beta_Gamma_Profile
 
-class SMFSplitStep(BaseLink):
-    """Simulates a link with one or several single mode fiber spans connected by
-    EDFA or Raman amplifiers using a split step method based on SSPROP.
+class DDFSplitStep(BaseLink):
+    """Simulates a link with one or several single mode dispersion decreasing fiber spans connected by
+    EDF amplifiers using a split step method based on SSPROP."""
 
-    Only a single polarization is simulated. Contributions from the other
-    polarization to the ASE noise are not included.
-    """
-
-    def __init__(self, dt, dz, nz, fiber_type='SSMF',
+    def __init__(self, dt, dz, nz,
                  alpha=0.0, beta2=1.0, gamma=-1.0,
                  verbose=False, n_spans=1,
                  post_boost=False, noise=False, noise_figure=3,
@@ -51,7 +45,6 @@ class SMFSplitStep(BaseLink):
             Spatial step in m.
         nz : int
             Number of spatial steps for one fiber span.
-        fiber_type : 'SSMF' standard single mode fiber (default) or 'DDF' dispersion decreasing fiber.
         alpha : float or numpy.array(float)
             Fiber loss coefficient in 1/m. It is possible to pass a vector of
             length nz in order to specify an individual loss coefficient for
@@ -94,11 +87,9 @@ class SMFSplitStep(BaseLink):
         self._center_frequency = center_frequency
         self._span_length = nz*dz
         self._n_spans = n_spans
-        self._fiber_type = fiber_type
-        if fiber_type == 'DDF':
-            self._BETA2 = None
-            self._GAMMA = None
-            self._D_z = None
+        self._BETA2 = None
+        self._GAMMA = None
+        self._D_z = None
 
     def _ASE_noise_power(self):
         '''Returns the amplified spontaneous emission (ASE) power using the
@@ -108,11 +99,6 @@ class SMFSplitStep(BaseLink):
         if self._noise == False:
             return 0.0
         G = 10**(self._gain/10.0)
-        if isinstance(self._gain, np.ndarray):
-            assert(len(self._gain) == 1) # no individual loss coeffients per
-                                         # span allowed with noise enabled
-                                         # at the moment
-            G = G[0]
         Fn = 10**(self._noise_figure/10.0)
         n_sp = (G*Fn - 1.0)/2.0/(G - 1.0)
         return np.max([0, n_sp * Planck * self._center_frequency * (G - 1)])
@@ -131,8 +117,7 @@ class SMFSplitStep(BaseLink):
         # over the simulation bandwidth 1/dt, i.e.,
 
         P2 = self._ASE_noise_power() / self._dt
-
-        # Solving P1=c^2=P2 for c leads to
+                   # Solving P1=c^2=P2 for c leads to
 
         c = np.sqrt(P2)
         return c*wgn
@@ -154,19 +139,12 @@ class SMFSplitStep(BaseLink):
 
     def transmit(self, input):
         # Docstring is inherited from base class.
-        # Depending on the fiber type choose the fiber propagation solver either the standard ssprop or DDF ssprop.
-        if self._fiber_type == 'DDF':
-            profile = Get_Beta_Gamma_Profile(self._alpha, self._beta2, self._gamma, self._dz, self._nz)
-            self._BETA2 = profile['BETA2']
-            self._GAMMA = profile['GAMMA']
-            solve_propagation = _DDFssprop
-            disp_nl_profile = (self._BETA2, self._GAMMA)
-        else:
-            solve_propagation = _ssprop
-            disp_nl_profile = ([0., 0., -self._beta2], -self._gamma)
+        profile = Get_Beta_Gamma_Profile(self._alpha, self._beta2, self._gamma, self._dz, self._nz)
+        self._BETA2 = profile['BETA2']
+        self._GAMMA = profile['GAMMA']
 
         if self._n_spans == 1:
-            uu = solve_propagation(input, self._dt, self._dz, self._nz, self._alpha, disp_nl_profile[0], disp_nl_profile[1])
+            uu = _DDFssprop(input, self._dt, self._dz, self._nz, self._alpha, self._BETA2, self._GAMMA)
 
             if self._post_boost == True:
                 if self._alpha.size != 1:
@@ -178,7 +156,7 @@ class SMFSplitStep(BaseLink):
         else:
             uu = input
             for span_i in range(0,self._n_spans):
-                uu = solve_propagation(uu, self._dt, self._dz, self._nz, self._alpha, disp_nl_profile[0], disp_nl_profile[1] )
+                uu = _DDFssprop(uu, self._dt, self._dz, self._nz, self._alpha, self._BETA2, self._GAMMA)
 
                 if self._verbose:
                     print("Finished span",span_i+1)

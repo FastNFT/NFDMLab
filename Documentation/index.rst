@@ -39,6 +39,7 @@ Acknowledgements
 ----------------
 
 - This project has received funding from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation programme (grant agreement No 716669).
+- This project has received funding from the European Union’s Horizon 2020 research and innovation programme under the Marie Skłodowska-Curie grant agreement No 766115.
 - Fiber-topic transmissions are simulated using a slightly modified port of `SSPROP <https://www.photonics.umd.edu/software/ssprop/>`_.
 - Alexander Geisler has contributed a Raman gain profile.
 

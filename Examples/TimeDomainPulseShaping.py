@@ -137,6 +137,7 @@ class TimeDomainPulseShaping(BaseExample):
         self._link = SMFSplitStep(self.dt,
                                   dz,
                                   self.n_steps_per_span,
+                                  "SSMF",
                                   self.alpha,
                                   self.beta2,
                                   self.gamma,

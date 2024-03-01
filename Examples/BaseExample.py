@@ -270,6 +270,8 @@ class BaseExample(ABC):
         rx_data["nfspecs"][0].show(legend=["tx", "rx"])
 
         constellation_diagram = ConstellationDiagram(self.constellation)
+        # scaling the Rx symbols, to the rms power of Tx symbols, This will isolate the effect of scaling from EVM computation
+        rx_data["symbols"] = np.sqrt(np.mean(np.abs(tx_data["symbols"])**2))*rx_data["symbols"]/np.sqrt(np.mean(np.abs(rx_data["symbols"])**2))
         constellation_diagram.plot(rx_data["symbols"], new_fig=True)
 
         error_vector_magnitude = ErrorVectorMagnitude()
